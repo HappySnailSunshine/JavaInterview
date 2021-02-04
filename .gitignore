@@ -1,0 +1,12 @@
+/**/target/
+/**/.settings/
+/**/log/
+/**/logs/
+/**/.idea/
+/**/.project
+/**/.classpath
+/**/.log
+/**/*.iml
+/**/.DS_Store
+/**/.factorypath
+*.epoch
