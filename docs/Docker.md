@@ -1222,12 +1222,31 @@ docker run  --env MODE=standalone --name nacos3 -d -p 8850:8848 nacos/nacos-serv
 
 ### Oracle
 
+Ubuntu18 安装 Oracle
+
+参考：
+
+https://www.cnblogs.com/SH170706/p/10563899.html
+
+https://blog.csdn.net/qq10108628825/article/details/86726576?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control
+
+
+
 ```shell
 docker pull rohitbasu77/oracle11g:latest
 docker run -d --name oracle11g -p 40022:22 -p 41521:1521 -p 48080:8080 rohitbasu77/oracle11g:latest
 # 注意在阿里云需要开放的端口是41521
 
-    docker exec -it f54be5debb81 /bin/bash #进入容器
+docker exec -it 84bd315f40ff  /bin/bash #进入容器
+
+sqlplus /nolog #进入sqlplus
+
+Conn sys/oracle as sysdba  #使用sysdba角色登录sqlplus
+
+#连接上以后 修改system密码为oracle
+alter user system identified by oracle;
+#修改system密码为oracle
+alter user sys identified by oracle
 ```
 
 
@@ -1251,7 +1270,8 @@ docker run -d --name oracle11g -p 40022:22 -p 41521:1521 -p 48080:8080 rohitbasu
 意思就是找这个文件，看这个名字，发现现在安装的这个名字是XE，所以用Navicat连接数据库的时候，需要写XE，不然连不上。
 
 ```shel
-cd /u01/app/oracle/product/11.2.0/xe/network/admin#
+find -name  tnsnames.ora
+cd /u01/app/oracle/product/11.2.0/xe/network/admin
 ```
 
 ![image-20200814094917014](../media/pictures/Docker.assets/image-20200814094917014.png)
@@ -1261,6 +1281,8 @@ cd /u01/app/oracle/product/11.2.0/xe/network/admin#
 
 
 ![image-20210203181618939](../media/pictures/Docker.assets/image-20210203181618939.png)
+
+
 
 
 

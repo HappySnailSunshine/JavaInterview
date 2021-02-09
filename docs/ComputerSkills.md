@@ -1325,6 +1325,32 @@ https://mp.weixin.qq.com/s/LUPa_uSEd91Pj08VwxsxEQ
 
 
 
+## Sublime Text 3 
+
+这个是一个很好的文本编辑器，代码高亮，很漂亮。
+
+但是这个默认不支持GBK格式，需要安装。
+
+
+
+参考：https://blog.csdn.net/yanjiangdi/article/details/77869696
+
+
+
+安装的转换成GBK的插件，ConvertToUTF-8如果不可以用，可以试试GBK Support，或者GBK Encoding Support。不同博客里面写的插件不一样，
+
+
+
+在具体操作时候会出现一下一个错误：
+
+Error validating download (got 817937144c34c84c88cd43b85318b2656f9c3fac02f8f72cbc18360b2c26d139 instead of 6f4c264a24d933ce70df5dedcf1dcaeeebe013ee18cced0ef93d5f746d80ef60), please try manual install
+
+
+
+遇到这种情况，就将另一个长字符串代替旧的字符串就好。
+
+参考：https://blog.csdn.net/qq_45992988/article/details/109630782
+
 
 
 # XShell连接

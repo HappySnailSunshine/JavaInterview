@@ -1001,33 +1001,75 @@ WHEN state = 6 THEN 6
 
 
 
-if()
+> 注意：
+>
+> 默认语句是MySql语句 ，如果是其他数据库语句会有特殊说明；
+>
+> 即使是同样一种数据库，不同版本有些语句也有差异，比如group by 后面字段等；
+>
+> 参考自《SQL基础教程 第二版》；
 
-把salary表中的女改成男，男改成女:
+# 一、SQL概述 
 
-update salary set sex = if( sex = '男','女','男');
+## DBMS种类
 
+数据库管理系统DBMS，DBMS分五类：
 
+- 层次数据库
+- 关系型数据库
+- 面向对象数据库
+- XML数据库
+- 键值存储数据库
 
-if(true,a,b),  if(false,a,b) 这个就是第一个如果是true，就等于a，false就等于b，有点像三元表达式
-
-ifnull(null, a),ifnull(a,b),   ifnull里有两个数，如果第一个不是null，是a非null,就都等于a， 如果a=Null，就都b。
-
-# 一:Mysql 基础
-
-## 数据库分类
-
-### 关系型数据库
-
-关系型数据库，不仅仅存储了数据本身，还存储了数据与数据之间的一个关系。
-
-### 非关系型数据库
-
-运行在内存中的map
+但是一般我们只会分为两类：关系型数据库，和非关系型数据库。
 
 
 
-## SQL操作
+**关系型数据库**（RDBMS）有代表性的有五种：
+
+- Oracle Databese：甲骨文公司的数据库
+- SQL Server：微软公司的数据库
+- DB2：IBM公司的数据库
+- PostgreSQL：开源的数据库
+- MySQL：开源的数据库
+
+
+
+## SQL种类
+
+### DDL（Date Definition Language，数据库定义语言）
+
+用来创建或者删除用来存储数据用的数据库以及数据库中的表等对象，DDL包含以下几种指令：
+
+- CREATE 创建数据库或者表等对象
+- DROP 删除数据库或者表等对象
+- ALTER 修改数据库或者表等对象的结构
+
+
+
+### DML（Date Manipulation Language，数据库操纵语言）
+
+用来查询或者变更表中的数据，DML包含以下几种指令：
+
+- SELECT 查询表中的数据
+- INSERT 向表中插入新数据
+- UPDATE 更新表中的数据
+- DELETE 删除表中的数据
+
+
+
+### DCL （Date Control Language，数据库控制语言）
+
+用来确认或者取消对数据库中的数据进行的变更。除此之外，还可以对RDBMS的用户对否有权限操作数据库中的对象（数据库表等）进行设定。DCL包含以下几种指令：
+
+- COMMIT  确认对数据库中的数据进行变更
+- ROLLBACK 取消对数据库中的数据进行变更
+- GRANT 赋予用户操作缺陷
+- REVOKE 取消用户的操作权限
+
+
+
+## 标准SQL
 
 ### 数据库相关
 
@@ -1036,7 +1078,6 @@ Mysql 不区分大小写。
 ```sql
 -- MySql
 Show databases
-
 --Oracle、PostgreSql 没有这个
 
 --创建数据库
@@ -1102,7 +1143,7 @@ alter database mydb2 character set utf8;
 
 
 
-### 表
+### 表相关
 
 ```sql
 --使用数据库 在操作表之前一定要先选择数据库
@@ -1215,7 +1256,7 @@ insert into enmu_test values('male','java,c,python')
 
 ```sql
 --增加新列
-alter table stuff and image varchar(300), add province varchar(20);
+alter table stuff add image varchar(300), add province varchar(20);
 
 --修改列字段类型
 alter table stuff modify job varchar(60)
@@ -1227,15 +1268,29 @@ alter table stuff drop image;
 rename table stuff to user;
 
 --修改表字符集
-alter table user character set gbk;
+alter table t_user character set gbk;
 
---修改表某列的名称
-alter table user character set gbk;
+--修改表某列的名称 
+--MySql
+alter table t_user CHANGE `name` realName VARCHAR(30)
+--PostgreSQL
+alter table product RENAME product_name1 TO product_name
 
 --修改表的默认值
 alter table stuff modify salary double default 0;
 alter table stuff change salary salary salary double default 0;
 alter tavle stuff change salary salary double default 0,change gender gender varchar(10) default 'male';
+
+--各个数据库之间语句有区别
+--需求添加一列可以存储100位可变长字符串的product_name_pinyin列
+--DB2 PostgreSQL MySQL
+ALTER TABLE Product ADD COLUMN product_name_pinyin VARCHAR(100);
+
+--Oracle
+ALTER TABLE Product ADD (product_name_pinyin VARCHAR2(100));
+
+--SQL Server
+ALTER TABLE Product ADD product_name_pinyin VARCHAR(100);
 ```
 
 
@@ -1263,7 +1318,12 @@ drop table user;
 
 
 
-### 表内数据
+### 表内数据相关
+
+#### 注释
+
+- --    行注释
+- /*   */    多行注释
 
 
 
@@ -1282,7 +1342,6 @@ insert into stuff values (1,'zhangsan')
 
 
 
-
 --修改字段
 update sruff set salary = 5000;
 update stuff set salary = 3000 where name = 'zhangsan'
@@ -1290,6 +1349,7 @@ update stuff set salary = 3000,job = 'ccc' where name = 'lisi'
 
 insert into stuff (id,name,gender,salary) values (3,"sunshine",'male',10000)
 update stuff set salary = salary + 10000 where name = 'steve'
+
 
 
 --删除数据  工作这种用的少 大多数都有更新删除标志 del_flag，并不会真正物理上的删除，只会逻辑上的删除
@@ -1303,19 +1363,245 @@ delete from stuff where id = 1;
 
 （工作大多数都是干这个事情）
 
+
+
+进行各种语句操作之前，首先制造一些数据：
+
 ```sql
---注意实际工作中 select 后面不写*， 这样会导致不能命中索引，要写出具体字段名称。
+--SQL Server PostgreSQL
+-- DML:插入数据
+BEGIN TRANSACTION;
+INSERT INTO Product VALUES ('0001', 'T恤' ,'衣服', 1000, 500, '2009-09-20');
+INSERT INTO Product VALUES ('0002', '打孔器', '办公用品', 500, 320, '2009-09-11');
+INSERT INTO Product VALUES ('0003', '运动T恤', '衣服', 4000, 2800, NULL);
+INSERT INTO Product VALUES ('0004', '菜刀', '厨房用具', 3000, 2800, '2009-09-20');
+INSERT INTO Product VALUES ('0005', '高压锅', '厨房用具', 6800, 5000, '2009-01-15');
+INSERT INTO Product VALUES ('0006', '叉子', '厨房用具', 500, NULL, '2009-09-20');
+INSERT INTO Product VALUES ('0007', '擦菜板', '厨房用具', 880, 790, '2008-04-28');
+INSERT INTO Product VALUES ('0008', '圆珠笔', '办公用品', 100, NULL, '2009-11-11');
+COMMIT;
 
---一般查询数据 
-select * from student;
-select * from student where (chinese + english + math) > 180;
-select name from student where math > 80 and math <= 90; 
-selsct * from student where class = 'class4'
+--如果是MySql的话，需要把上面的这个修改为：
+START TRANSACTION;
+```
 
 
+
+##### SELECT语句基础
+
+注意实际工作中 select 后面不写*， 这样会导致不能命中索引，要写出具体字段名称。
+
+###### 为列设定别名
+
+```sql
+--为列设定别名
+SELECT 
+	product_id   AS id,
+    product_name  AS name,
+    purchase_price AS price
+FROM Product;
+
+--为列设定中文别名 需要双引号
+SELECT 
+	product_id     AS "商品编号",
+    product_name   AS "商品名称",
+    purchase_price AS "进货单价"
+FROM Product;
+```
+
+
+
+###### 为列添加常数
+
+```sql
+--为列添加常数 string，number，date三列数据表中没有的，相当于三列常数
+SELECT
+    '商品' AS string, 
+    38 AS number, 
+    '2009-02-24' AS date,
+    product_id, 
+    product_name
+FROM Product;
+```
+
+
+
+###### DISTINCT 去除重复行
+
+```sql
+--NULL如果存在多行时，也会被合并成一行
+SELECT 
+	DISTINCT product_type
+FROM Product;
+
+--多列之前使用DISTINCT 
+--如果是两个字段 product_type 和 regist_date 都一样的数据会合并到一起  
+SELECT 
+	DISTINCT product_type, 
+	regist_date
+FROM Product;
+
+
+
+--以前的例子 
+--去重 distinct
+select distinct class from student;
+select distinct chinese from student;
+
+--某个网站做了一个登录统计的表，用户每次登录App，都会留下一条记录，现在该网站想统计一下日活（一天之内多少人登录）。
+create table login(
+id int,
+user_id varchar(200),
+login_time datetime,
+device carchar(20)
+);
+
+insert into login values (1, '0001',now(),'ios');
+insert into login values (2, '0001',now(),'android');
+insert into login values (3, '0001',now(),'web');
+insert into login values (4, '0002',now(),'ios');
+insert into login values (5, '0002',now(),'ios');
+
+select distinct user_id from login where login_time > '2021-01-01 10:10:10' and login_time < '2021-01-02 10:10:10';
+```
+
+注意：DISTINCT关键字只能放在第一列之前，如果放在后面会报错。
+
+
+
+###### where子句
+
+```sql
+SELECT 
+	product_name, 
+	product_type
+ FROM Product
+ WHERE product_type = '衣服';
+```
+
+
+
+##### 算数运算符
+
+四则运算
+
+- +
+- -
+- *
+- /
+
+```sql
+--乘法
+SELECT product_name, sale_price,
+      sale_price * 2 AS “sale_price_x2"
+FROM Product;
+
+--Sql里面是可以进行四则运算的，但是有一种说法是在Sql里面四则运算会影响Sql性能，这一点我自己也不是很清楚，后续需要往深入研究学习
+```
+
+
+
+NULL和进行四则运算：
+
+- 5 + NULL
+- 10 - NULL
+- 1 * NULL
+- 4 / NULL
+- NULL / 9
+- NULL / 0
+
+上面结果都是NULL。
+
+结论：**所有包含NULL的计算，结果肯定是NULL**；
+
+
+
+##### 比较运算符
+
+- `=` 相等
+- `<>` 不相等
+- `>=`  大于等于
+- `>` 大于
+- `<=` 小于等于
+- `<`  小于
+
+```sql
+--不等于 价格不等于500
+SELECT 
+	product_name, 
+	product_type
+ 	FROM Product
+ WHERE sale_price <> 500;
+ 
+ --也可以对日期类进行比较运算符
+ SELECT 
+ product_name, 
+ product_type, 
+ regist_date
+  	FROM Product
+ WHERE regist_date < '2009-09-27';
+ 
+ --where后面也可以进行比较运算 和 算数运算
+ SELECT product_name, sale_price, purchase_price
+  	 FROM Product
+ WHERE sale_price - purchase_price >= 500;
+ 
+```
+
+
+
+注意：
+
+1、对字符类型进行比较运算符。
+
+- ​	假如表中char类型字段，'1', '11' , '2', ‘22’，'3'
+- ​	如果判定字段 a > 1，结果是22，3 ，是没有11的。
+- ​	因为字符型数据，是按照数据字典进行排序的，并不是按照数字大小排序的。
+
+2、不能对NULL 使用比较运算符，只能下面这样
+
+- IS NULL
+- IS NOT NULL
+
+​		
+
+##### FROM子句
+
+可以省略where子句的RDBMS：SQL Server、PostgreSQL、MySql
+
+不可以省略where子句的RDBMS：Oracle
+
+
+
+##### 逻辑运算符
+
+- AND
+- OR
+
+```sql
+--AND
+SELECT product_name, purchase_price
+  	FROM Product
+WHERE product_type = '厨房用具'
+AND sale_price >= 3000;
+
+--OR
+SELECT product_name, purchase_price
+  FROM Product
+ WHERE product_type = '厨房用具'
+    OR sale_price >= 3000;
+```
+
+注意：AND运算符的优先级要高于OR运算符。如果两个混用的时候，必要的情况下要加括号（）。
+
+
+
+##### 其他运算符
+
+```sql
 --运算符 
 --不等于null
-select * from student where english <=> null;
+select * from student where english < > null;
 select * from student where english is not null;
 
 --等于null
@@ -1336,6 +1622,8 @@ select * from t_student where name like '%阳光'
 select * from t_student where name like '_阳_';
 ```
 
+
+
 **通配符 % \_分别代表什么意思：**
 
 - %：匹配一个，多个或者没有。只要包含所要查询的内容，即可匹配到
@@ -1345,25 +1633,6 @@ select * from t_student where name like '_阳_';
 
 
 ```sql
---去重 distinct
-select distinct class from student;
-select distinct chinese from student;
-
---某个网站做了一个登录统计的表，用户每次登录App，都会留下一条记录，现在该网站想统计一下日活（一天之内多少人登录）。
-create table login(
-id int,
-user_id varchar(200),
-login_time datetime,
-device carchar(20)
-);
-
-insert into login values (1, '0001',now(),'ios');
-insert into login values (2, '0001',now(),'android');
-insert into login values (3, '0001',now(),'web');
-insert into login values (4, '0002',now(),'ios');
-insert into login values (5, '0002',now(),'ios');
-
-select distinct user_id from login where login_time > '2021-01-01 10:10:10' and login_time < '2021-01-02 10:10:10';
 
 
 
@@ -1506,6 +1775,235 @@ select class,count(id) as number from student group by class having number < 10 
 (4)having ...
 (6)order by ...  
 ```
+
+
+
+#### 聚合函数
+
+- COUNT  记录数（行数）
+- SUM  总和
+- AVG   平均值
+- MAX   最大值
+- MIN   最小值
+
+```sql
+--计算行数 所有列，其中包含NULL的数据
+SELECT 
+COUNT(*)
+FROM Product;
+
+--只计算某一个列  这里会自动去除掉值为NULL的列
+SELECT COUNT(purchase_price)
+FROM product;
+
+--合计
+SELECT SUM(sale_price)
+ 	FROM Product;
+ 	 
+SELECT SUM(sale_price), SUM(purchase_price)
+ 	FROM Product;
+ 	
+--平均值
+SELECT AVG(sale_price)
+ 	FROM Product;
+ 	
+SELECT AVG(sale_price), AVG(purchase_price)
+ 	 FROM Product;
+ 	 
+--最大值 最小值
+SELECT MAX(sale_price), MIN(purchase_price)
+ 	FROM Product;	
+ 	
+--聚合函数去除重复值  DISTINCT
+SELECT DISTINCT COUNT(product_type)
+  	FROM Product;
+
+SELECT SUM(sale_price), SUM(DISTINCT sale_price)
+  	FROM Product;
+
+```
+
+ 注意：
+
+1、聚合函数和会不会包含NULL
+
+- 聚合函数会将NULL的值排除在外
+- COUNT（*） 不会排除NULL
+
+2、聚合函数适用范围
+
+- MAX、MIN  适用于任何数据类型（比如对日期也可以使用）
+- SUM、AVG  只能对数值型列使用
+
+
+
+#### 分组 
+
+GROUP BY  后面的列称为**聚合键** 或者 **分组列** 
+
+```sql
+SELECT 
+    product_type, 
+    COUNT(*)
+ FROM Product
+ GROUP BY product_type;
+ 
+--聚合键中如果 包含空行，结果中会以不确定（NULL）显示出来
+
+--group by 和 where 一起用
+SELECT purchase_price, COUNT(*)
+  	FROM Product
+ WHERE product_type = '衣服'
+ GROUP BY purchase_price;
+```
+
+注意：
+
+1、GROUP BY  和 WHERE 一起用，SQL执行顺序：
+
+ FROM -> WHERE -> GROUP BY  -> SELECT
+
+
+
+2、与集合函数和GROUP BY子句有关的常见错误
+
+- 在SELECT子句中书写了多余的列
+
+  ```sql
+  --目前只有MySQL认同这种写法，其他数据库Oracle、PG这种写法会报错
+  SELECT
+      product_name, 
+      purchase_price, COUNT(*)
+  FROM Product
+  GROUP BY purchase_price;
+  ```
+
+  
+
+- 在GROUP BY中多些了别的**别名**
+
+  ```sql
+  --这个之所以会报错，是由于执行顺序导致的，因为SELECT子句在最后执行，所以GROUP BY子句找不到
+  SELECT 
+      product_name, 
+      purchase_price, COUNT(*)
+  FROM Product
+  GROUP BY purchase_price;
+  ```
+
+  
+
+- GROUP BY子句结果能排序吗
+
+  - 结果是随机的
+
+- 在WHERE 中使用聚合函数（会报错，后面用HAVING）
+
+  ```sql
+  SELECT product_type, COUNT(*)
+     FROM Product
+  WHERE COUNT(*) = 2
+  GROUP BY product_type;
+  ```
+
+只有SELECT子句和HAVING子句（以及ORDER BY子句）中能够使用聚合函数。
+
+ 
+
+#### HAVING
+
+为聚合结果指定条件
+
+```sql
+--对数量过滤
+SELECT 
+    product_type, 
+    COUNT(*)
+FROM Product
+GROUP BY product_type
+HAVING COUNT(*) = 2;
+
+--对平均值过滤
+SELECT product_type, AVG(sale_price)
+  FROM Product
+ GROUP BY product_type
+HAVING AVG(sale_price) >= 2500;
+```
+
+
+
+使用HAVING子句的时候SELECT语句的顺序为：
+
+SELECT->FROM->WHERE->GROUP BY->HAVING
+
+
+
+HAVING子句能够使用的三种子句：
+
+- 常数
+- 聚合函数
+- GROUP BY子句中指定的列名（聚合键）
+
+
+
+WHERE子句和HAVING子句对比：
+
+- WHERE子句-----指定**列**所对应的条件
+- HAVING子句-----指定**组**所对应的条件
+- WHERE子句要比HAVING子句处理速度要快，返回结果所需时间更短
+
+
+
+#### 排序
+
+ORDER BY 啥都不写默认ASC，如果需要逆序，用DESC
+
+- ASC
+- DESC
+
+```sql
+--默认不写的话就是升序
+SELECT product_id, product_name, sale_price, purchase_price
+  FROM Product
+ORDER BY sale_price;
+
+--逆序
+SELECT product_id, product_name, sale_price, purchase_price
+  FROM Product
+ORDER BY sale_price DESC;
+
+--使用多个排序键 如果多个排序键，优先使用最左面的键
+SELECT product_id, product_name, sale_price, purchase_price
+  FROM Product
+ORDER BY sale_price, product_id;
+
+--ORDER BY 后面可以别名
+SELECT product_id AS id, product_name, sale_price AS sp, purchase_price
+  FROM Product
+ORDER BY sp, id;
+
+--ORDER BY 后面可以使用聚合函数
+SELECT product_type, COUNT(*)
+  FROM Product
+ GROUP BY product_type
+ORDER BY COUNT(*);
+
+-- 通过列名指定
+SELECT product_id, product_name, sale_price, purchase_price
+  FROM Product
+ORDER BY sale_price DESC, product_id;
+
+-- 通过列编号指定 （不推荐，可读性差）
+product_id, product_name, sale_price, purchase_price
+  FROM Product
+ORDER BY 3 DESC, 1;
+```
+
+注意：
+
+- 使用NULL的列作为排序键的时候，NULL值会在开头或者结尾处进行汇总。
+
+  
 
 
 
@@ -4678,7 +5176,7 @@ e. 创建索引时避免以下错误观念：索引越多越好，认为一个�
 **用法：在select语句前加上explain**
 显示mysql如何使用索引来处理select语句以及连接表，可以帮助选择更好的索引和写出更优化的查询语句
 
-参考王道的文档，还有：https://www.jianshu.com/p/f29a619b3ee8
+参考CS的文档，还有：https://www.jianshu.com/p/f29a619b3ee8
 
 
 
