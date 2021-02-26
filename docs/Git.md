@@ -1,8 +1,6 @@
 # Git
 
-## 目录
 
-[TOC]
 
 版本控制，可以避免团队协作项目时，好多问题的出现!
 
@@ -13,6 +11,16 @@
 > 菜鸟笔记：https://www.runoob.com/git/git-branch.html
 
 ## Github 
+
+### 概念
+
+首先自己在Github上面建造一个仓库，或者看我的仓库：https://github.com/HappySnailSunshine/JavaInterview
+
+- Repositories 仓库，每个项目对应一个仓库
+- Star 收藏，后面的数字代表收藏的人数
+- Fork 将其他人仓库克隆到自己仓库中
+
+
 
 ### 如何看开源项目
 
@@ -163,6 +171,18 @@ https://github.com/trending  可以按语言，日期范围（本天、本周、
 ### 修改GitHub仓库语言
 
 参考：https://blog.csdn.net/HaleyLiu123/article/details/76790658?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control
+
+
+
+### github博客引用
+
+```xml
+<p align="center">
+<a href="https://github.com/HappySnailSunshine/JavaInterview.git" target="_blank">
+	<img src="https://java-interview.oss-cn-chengdu.aliyuncs.com/page/%E9%A6%96%E9%A1%B5%E8%AF%B4%E6%98%8E.png" width=""/>
+</a>
+</p>
+```
 
 
 
