@@ -3757,6 +3757,73 @@ TCC的原理？如果进行分布式事务的时候，try阶段完成了，但�
 
 
 
+##  SpringCloud相关
+
+### 1.Springcloud介绍
+
+家族介绍介绍
+
+
+
+### 2.SpringCloud 和Dubbo比较
+
+从下面几个方面来说：
+
+社区活跃度，开发公司，未来发展，使用上手难易程度，性能，周边完善程度
+
+
+
+**Spring相当于整机，而Dubbo需要自己去组装，整机的性能有保证，组装的机子更自由。**
+
+#### 社区活跃度
+
+SpringCloud社区活跃度高，也有专业团队在维护，常年很活跃。Dubbo阿里开发，中间停止更新过一段时间，2017年重新又更新，未来会不会持续更新，说不准，但是SpringCloud会应该一直更新。
+
+
+
+#### 开发公司、未来发展
+
+阿里和Spring团队还是有区别，阿里是商业公司，Spring团队致力于打造全球使用的开源框架，未来SpringCloud作为Spring的一个很重要的项目，Spring团队会好好去维护。Dubbo团队不一定。
+
+
+
+#### 上手难度
+
+SpringCloud上手容易，他里面包含的好多组件，需要什么，自己可以去使用。在我自己的公司，我们使用的是SpringCloud，只是将Dubbo是作为一个服务调用组件来使用的（Dubbo最开始的定位之一）而Dubbo上手难度大，需要公司有专业的中间件团队来修改和维护Dubbo，或者集成其他组件等，上手难度大。
+
+
+
+#### 速度、性能方面
+
+Dubbo由于是二进制的传输，占用带宽会更少
+
+SpringCloud是HTTP协议传输，带宽会比较多，同时使用HTTP协议一般会使用JSON报文，消耗会更大
+
+
+
+参考（这几篇文章写的比较全，从各个方面介绍）：
+
+https://www.cnblogs.com/hmy-1365/p/11050265.html
+
+https://www.cnblogs.com/just-for-beyond/p/9790227.html
+
+知乎：https://www.zhihu.com/question/45413135/answer/128315403 
+
+
+
+
+
+### 3.简述Springcloud核心组件及用途   
+
+![image-20210223153533186](../media/pictures/SpringCloud.assets/image-20210223153533186.png)
+
+- 服务发现（服务注册中心）——Netflix Eureka、后来用Nacos
+- 服务调用   ——  Ribbon、LoadBalancer，公司用的是Dubbo调用
+- 客服端负载均衡—— Netflix Ribbon
+- 断路器（服务降级）—— Netflix Hystrix，高级部分有sentienl
+- 服务网关——Netflix Zuul（停更）、gateway（常用）
+- 分布式配置——Spring Cloud Config 、后来用的Nacos
+
 
 
 
