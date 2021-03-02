@@ -1,9 +1,9 @@
 # JavaInterview
 
-
+- [个人博客](https://happysnail.cn)  欢迎访问！
 
 - [Gitee   在线阅读地址](https://happysnailsunshine.gitee.io/javainterview)（速度更快，图片可以快速加载出来）
-- [Github 在线阅读地址](https://happysnail.cn)（个人域名访问）
+- [Github 在线阅读地址](https://happysnail.cn/JavaInterview/)（速度相对较慢）
 - Github：https://github.com/HappySnailSunshine/JavaInterview.git
 - 码云：https://gitee.com/HappySnailSunshine/JavaInterview.git
 
