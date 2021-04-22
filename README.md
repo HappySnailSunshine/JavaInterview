@@ -1,6 +1,6 @@
 # JavaInterview
 
-- [个人博客](https://happysnail.cn)  欢迎访问！
+- [个人博客](http://47.92.208.93:8090/)  欢迎访问！
 
 - [Gitee   在线阅读地址](https://happysnailsunshine.gitee.io/javainterview)（速度更快，图片可以快速加载出来）
 - [Github 在线阅读地址](https://happysnail.cn/JavaInterview/)（速度相对较慢）
