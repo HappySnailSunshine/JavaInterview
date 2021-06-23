@@ -1,5 +1,7 @@
 # Collection
 
+集合 数据结构
+
 
 
 > 参考自：https://github.com/Snailclimb/JavaGuide.git
@@ -8,7 +10,7 @@
 >
 > 牛客网上面的一些习题
 
-# 集合 数据结构
+# Interview
 
 ### 1. HashTable和HashMap区别
 
@@ -315,68 +317,13 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneabl
 **Node节点类源码:**
 
 ```java
-// 继承自 Map.Entry<K,V>
-static class Node<K,V> implements Map.Entry<K,V> {
-       final int hash;// 哈希值，存放元素到hashmap中时用来与其他元素hash值比较
-       final K key;//键
-       V value;//值
-       // 指向下一个节点
-       Node<K,V> next;
-       Node(int hash, K key, V value, Node<K,V> next) {
-            this.hash = hash;
-            this.key = key;
-            this.value = value;
-            this.next = next;
-        }
-        public final K getKey()        { return key; }
-        public final V getValue()      { return value; }
-        public final String toString() { return key + "=" + value; }
-        // 重写hashCode()方法
-        public final int hashCode() {
-            return Objects.hashCode(key) ^ Objects.hashCode(value);
-        }
-
-        public final V setValue(V newValue) {
-            V oldValue = value;
-            value = newValue;
-            return oldValue;
-        }
-        // 重写 equals() 方法
-        public final boolean equals(Object o) {
-            if (o == this)
-                return true;
-            if (o instanceof Map.Entry) {
-                Map.Entry<?,?> e = (Map.Entry<?,?>)o;
-                if (Objects.equals(key, e.getKey()) &&
-                    Objects.equals(value, e.getValue()))
-                    return true;
-            }
-            return false;
-        }
-}
-
+// 继承自 Map.Entry<K,V>static class Node<K,V> implements Map.Entry<K,V> {       final int hash;// 哈希值，存放元素到hashmap中时用来与其他元素hash值比较       final K key;//键       V value;//值       // 指向下一个节点       Node<K,V> next;       Node(int hash, K key, V value, Node<K,V> next) {            this.hash = hash;            this.key = key;            this.value = value;            this.next = next;        }        public final K getKey()        { return key; }        public final V getValue()      { return value; }        public final String toString() { return key + "=" + value; }        // 重写hashCode()方法        public final int hashCode() {            return Objects.hashCode(key) ^ Objects.hashCode(value);        }        public final V setValue(V newValue) {            V oldValue = value;            value = newValue;            return oldValue;        }        // 重写 equals() 方法        public final boolean equals(Object o) {            if (o == this)                return true;            if (o instanceof Map.Entry) {                Map.Entry<?,?> e = (Map.Entry<?,?>)o;                if (Objects.equals(key, e.getKey()) &&                    Objects.equals(value, e.getValue()))                    return true;            }            return false;        }}
 ```
 
 **树节点类源码:**
 
 ```java
-static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
-        TreeNode<K,V> parent;  // 父
-        TreeNode<K,V> left;    // 左
-        TreeNode<K,V> right;   // 右
-        TreeNode<K,V> prev;    // needed to unlink next upon deletion
-        boolean red;           // 判断颜色
-        TreeNode(int hash, K key, V val, Node<K,V> next) {
-            super(hash, key, val, next);
-        }
-        // 返回根节点
-        final TreeNode<K,V> root() {
-            for (TreeNode<K,V> r = this, p;;) {
-                if ((p = r.parent) == null)
-                    return r;
-                r = p;
-       }
-
+static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {        TreeNode<K,V> parent;  // 父        TreeNode<K,V> left;    // 左        TreeNode<K,V> right;   // 右        TreeNode<K,V> prev;    // needed to unlink next upon deletion        boolean red;           // 判断颜色        TreeNode(int hash, K key, V val, Node<K,V> next) {            super(hash, key, val, next);        }        // 返回根节点        final TreeNode<K,V> root() {            for (TreeNode<K,V> r = this, p;;) {                if ((p = r.parent) == null)                    return r;                r = p;       }
 ```
 
 #### HashMap源码分析
@@ -386,64 +333,13 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 HashMap 中有四个构造方法，它们分别如下：
 
 ```java
-    // 默认构造函数。
-    public HashMap() {
-        this.loadFactor = DEFAULT_LOAD_FACTOR; // all   other fields defaulted
-     }
-     
-     // 包含另一个“Map”的构造函数
-     public HashMap(Map<? extends K, ? extends V> m) {
-         this.loadFactor = DEFAULT_LOAD_FACTOR;
-         putMapEntries(m, false);//下面会分析到这个方法
-     }
-     
-     // 指定“容量大小”的构造函数
-     public HashMap(int initialCapacity) {
-         this(initialCapacity, DEFAULT_LOAD_FACTOR);
-     }
-     
-     // 指定“容量大小”和“加载因子”的构造函数
-     public HashMap(int initialCapacity, float loadFactor) {
-         if (initialCapacity < 0)
-             throw new IllegalArgumentException("Illegal initial capacity: " + initialCapacity);
-         if (initialCapacity > MAXIMUM_CAPACITY)
-             initialCapacity = MAXIMUM_CAPACITY;
-         if (loadFactor <= 0 || Float.isNaN(loadFactor))
-             throw new IllegalArgumentException("Illegal load factor: " + loadFactor);
-         this.loadFactor = loadFactor;
-         this.threshold = tableSizeFor(initialCapacity);
-     }
-
+    // 默认构造函数。    public HashMap() {        this.loadFactor = DEFAULT_LOAD_FACTOR; // all   other fields defaulted     }          // 包含另一个“Map”的构造函数     public HashMap(Map<? extends K, ? extends V> m) {         this.loadFactor = DEFAULT_LOAD_FACTOR;         putMapEntries(m, false);//下面会分析到这个方法     }          // 指定“容量大小”的构造函数     public HashMap(int initialCapacity) {         this(initialCapacity, DEFAULT_LOAD_FACTOR);     }          // 指定“容量大小”和“加载因子”的构造函数     public HashMap(int initialCapacity, float loadFactor) {         if (initialCapacity < 0)             throw new IllegalArgumentException("Illegal initial capacity: " + initialCapacity);         if (initialCapacity > MAXIMUM_CAPACITY)             initialCapacity = MAXIMUM_CAPACITY;         if (loadFactor <= 0 || Float.isNaN(loadFactor))             throw new IllegalArgumentException("Illegal load factor: " + loadFactor);         this.loadFactor = loadFactor;         this.threshold = tableSizeFor(initialCapacity);     }
 ```
 
 **putMapEntries方法：**
 
 ```java
-final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
-    int s = m.size();
-    if (s > 0) {
-        // 判断table是否已经初始化
-        if (table == null) { // pre-size
-            // 未初始化，s为m的实际元素个数
-            float ft = ((float)s / loadFactor) + 1.0F;
-            int t = ((ft < (float)MAXIMUM_CAPACITY) ?
-                    (int)ft : MAXIMUM_CAPACITY);
-            // 计算得到的t大于阈值，则初始化阈值
-            if (t > threshold)
-                threshold = tableSizeFor(t);
-        }
-        // 已初始化，并且m元素个数大于阈值，进行扩容处理
-        else if (s > threshold)
-            resize();
-        // 将m中的所有元素添加至HashMap中
-        for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
-            K key = e.getKey();
-            V value = e.getValue();
-            putVal(hash(key), key, value, false, evict);
-        }
-    }
-}
-
+final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {    int s = m.size();    if (s > 0) {        // 判断table是否已经初始化        if (table == null) { // pre-size            // 未初始化，s为m的实际元素个数            float ft = ((float)s / loadFactor) + 1.0F;            int t = ((ft < (float)MAXIMUM_CAPACITY) ?                    (int)ft : MAXIMUM_CAPACITY);            // 计算得到的t大于阈值，则初始化阈值            if (t > threshold)                threshold = tableSizeFor(t);        }        // 已初始化，并且m元素个数大于阈值，进行扩容处理        else if (s > threshold)            resize();        // 将m中的所有元素添加至HashMap中        for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {            K key = e.getKey();            V value = e.getValue();            putVal(hash(key), key, value, false, evict);        }    }}
 ```
 
 ##### put方法
@@ -462,78 +358,7 @@ ps:下图有一个小问题，来自 [issue#608](https://github.com/Snailclimb/J
 
 
 ```java
-public V put(K key, V value) {
-    return putVal(hash(key), key, value, false, true);
-}
-
-final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
-                   boolean evict) {
-    Node<K,V>[] tab; Node<K,V> p; int n, i;
-    // table未初始化或者长度为0，进行扩容
-    if ((tab = table) == null || (n = tab.length) == 0)
-        n = (tab = resize()).length;
-    // (n - 1) & hash 确定元素存放在哪个桶中，桶为空，新生成结点放入桶中(此时，这个结点是放在数组中)
-    if ((p = tab[i = (n - 1) & hash]) == null)
-        tab[i] = newNode(hash, key, value, null);
-    // 桶中已经存在元素
-    else {
-        Node<K,V> e; K k;
-        // 比较桶中第一个元素(数组中的结点)的hash值相等，key相等
-        if (p.hash == hash &&
-            ((k = p.key) == key || (key != null && key.equals(k))))
-                // 将第一个元素赋值给e，用e来记录
-                e = p;
-        // hash值不相等，即key不相等；为红黑树结点
-        else if (p instanceof TreeNode)
-            // 放入树中
-            e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
-        // 为链表结点
-        else {
-            // 在链表最末插入结点
-            for (int binCount = 0; ; ++binCount) {
-                // 到达链表的尾部
-                if ((e = p.next) == null) {
-                    // 在尾部插入新结点
-                    p.next = newNode(hash, key, value, null);
-                    // 结点数量达到阈值，转化为红黑树
-                    if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
-                        treeifyBin(tab, hash);
-                    // 跳出循环
-                    break;
-                }
-                // 判断链表中结点的key值与插入的元素的key值是否相等
-                if (e.hash == hash &&
-                    ((k = e.key) == key || (key != null && key.equals(k))))
-                    // 相等，跳出循环
-                    break;
-                // 用于遍历桶中的链表，与前面的e = p.next组合，可以遍历链表
-                p = e;
-            }
-        }
-        // 表示在桶中找到key值、hash值与插入元素相等的结点
-        if (e != null) { 
-            // 记录e的value
-            V oldValue = e.value;
-            // onlyIfAbsent为false或者旧值为null
-            if (!onlyIfAbsent || oldValue == null)
-                //用新值替换旧值
-                e.value = value;
-            // 访问后回调
-            afterNodeAccess(e);
-            // 返回旧值
-            return oldValue;
-        }
-    }
-    // 结构性修改
-    ++modCount;
-    // 实际大小大于阈值则扩容
-    if (++size > threshold)
-        resize();
-    // 插入后回调
-    afterNodeInsertion(evict);
-    return null;
-} 
-
+public V put(K key, V value) {    return putVal(hash(key), key, value, false, true);}final V putVal(int hash, K key, V value, boolean onlyIfAbsent,                   boolean evict) {    Node<K,V>[] tab; Node<K,V> p; int n, i;    // table未初始化或者长度为0，进行扩容    if ((tab = table) == null || (n = tab.length) == 0)        n = (tab = resize()).length;    // (n - 1) & hash 确定元素存放在哪个桶中，桶为空，新生成结点放入桶中(此时，这个结点是放在数组中)    if ((p = tab[i = (n - 1) & hash]) == null)        tab[i] = newNode(hash, key, value, null);    // 桶中已经存在元素    else {        Node<K,V> e; K k;        // 比较桶中第一个元素(数组中的结点)的hash值相等，key相等        if (p.hash == hash &&            ((k = p.key) == key || (key != null && key.equals(k))))                // 将第一个元素赋值给e，用e来记录                e = p;        // hash值不相等，即key不相等；为红黑树结点        else if (p instanceof TreeNode)            // 放入树中            e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);        // 为链表结点        else {            // 在链表最末插入结点            for (int binCount = 0; ; ++binCount) {                // 到达链表的尾部                if ((e = p.next) == null) {                    // 在尾部插入新结点                    p.next = newNode(hash, key, value, null);                    // 结点数量达到阈值，转化为红黑树                    if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st                        treeifyBin(tab, hash);                    // 跳出循环                    break;                }                // 判断链表中结点的key值与插入的元素的key值是否相等                if (e.hash == hash &&                    ((k = e.key) == key || (key != null && key.equals(k))))                    // 相等，跳出循环                    break;                // 用于遍历桶中的链表，与前面的e = p.next组合，可以遍历链表                p = e;            }        }        // 表示在桶中找到key值、hash值与插入元素相等的结点        if (e != null) {             // 记录e的value            V oldValue = e.value;            // onlyIfAbsent为false或者旧值为null            if (!onlyIfAbsent || oldValue == null)                //用新值替换旧值                e.value = value;            // 访问后回调            afterNodeAccess(e);            // 返回旧值            return oldValue;        }    }    // 结构性修改    ++modCount;    // 实际大小大于阈值则扩容    if (++size > threshold)        resize();    // 插入后回调    afterNodeInsertion(evict);    return null;} 
 ```
 
 **我们再来对比一下 JDK1.7 put方法的代码**
@@ -544,29 +369,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 - ②如果定位到的数组位置有元素，遍历以这个元素为头结点的链表，依次和插入的key比较，如果key相同就直接覆盖，不同就采用头插法插入元素。
 
 ```java
-public V put(K key, V value)
-    if (table == EMPTY_TABLE) { 
-    inflateTable(threshold); 
-}  
-    if (key == null)
-        return putForNullKey(value);
-    int hash = hash(key);
-    int i = indexFor(hash, table.length);
-    for (Entry<K,V> e = table[i]; e != null; e = e.next) { // 先遍历
-        Object k;
-        if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {
-            V oldValue = e.value;
-            e.value = value;
-            e.recordAccess(this);
-            return oldValue; 
-        }
-    }
-
-    modCount++;
-    addEntry(hash, key, value, i);  // 再插入
-    return null;
-}
-
+public V put(K key, V value)    if (table == EMPTY_TABLE) {     inflateTable(threshold); }      if (key == null)        return putForNullKey(value);    int hash = hash(key);    int i = indexFor(hash, table.length);    for (Entry<K,V> e = table[i]; e != null; e = e.next) { // 先遍历        Object k;        if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {            V oldValue = e.value;            e.value = value;            e.recordAccess(this);            return oldValue;         }    }    modCount++;    addEntry(hash, key, value, i);  // 再插入    return null;}
 ```
 
 
@@ -574,35 +377,7 @@ public V put(K key, V value)
 ##### get方法
 
 ```java
-public V get(Object key) {
-    Node<K,V> e;
-    return (e = getNode(hash(key), key)) == null ? null : e.value;
-}
-
-final Node<K,V> getNode(int hash, Object key) {
-    Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
-    if ((tab = table) != null && (n = tab.length) > 0 &&
-        (first = tab[(n - 1) & hash]) != null) {
-        // 数组元素相等
-        if (first.hash == hash && // always check first node
-            ((k = first.key) == key || (key != null && key.equals(k))))
-            return first;
-        // 桶中不止一个节点
-        if ((e = first.next) != null) {
-            // 在树中get
-            if (first instanceof TreeNode)
-                return ((TreeNode<K,V>)first).getTreeNode(hash, key);
-            // 在链表中get
-            do {
-                if (e.hash == hash &&
-                    ((k = e.key) == key || (key != null && key.equals(k))))
-                    return e;
-            } while ((e = e.next) != null);
-        }
-    }
-    return null;
-}
-
+public V get(Object key) {    Node<K,V> e;    return (e = getNode(hash(key), key)) == null ? null : e.value;}final Node<K,V> getNode(int hash, Object key) {    Node<K,V>[] tab; Node<K,V> first, e; int n; K k;    if ((tab = table) != null && (n = tab.length) > 0 &&        (first = tab[(n - 1) & hash]) != null) {        // 数组元素相等        if (first.hash == hash && // always check first node            ((k = first.key) == key || (key != null && key.equals(k))))            return first;        // 桶中不止一个节点        if ((e = first.next) != null) {            // 在树中get            if (first instanceof TreeNode)                return ((TreeNode<K,V>)first).getTreeNode(hash, key);            // 在链表中get            do {                if (e.hash == hash &&                    ((k = e.key) == key || (key != null && key.equals(k))))                    return e;            } while ((e = e.next) != null);        }    }    return null;}
 ```
 
 ##### resize方法
@@ -610,165 +385,13 @@ final Node<K,V> getNode(int hash, Object key) {
 进行扩容，会伴随着一次重新hash分配，并且会遍历hash表中所有的元素，是非常耗时的。在编写程序中，要尽量避免resize。
 
 ```java
-final Node<K,V>[] resize() {
-    Node<K,V>[] oldTab = table;
-    int oldCap = (oldTab == null) ? 0 : oldTab.length;
-    int oldThr = threshold;
-    int newCap, newThr = 0;
-    if (oldCap > 0) {
-        // 超过最大值就不再扩充了，就只好随你碰撞去吧
-        if (oldCap >= MAXIMUM_CAPACITY) {
-            threshold = Integer.MAX_VALUE;
-            return oldTab;
-        }
-        // 没超过最大值，就扩充为原来的2倍
-        else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY && oldCap >= DEFAULT_INITIAL_CAPACITY)
-            newThr = oldThr << 1; // double threshold
-    }
-    else if (oldThr > 0) // initial capacity was placed in threshold
-        newCap = oldThr;
-    else { 
-        // signifies using defaults
-        newCap = DEFAULT_INITIAL_CAPACITY;
-        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
-    }
-    // 计算新的resize上限
-    if (newThr == 0) {
-        float ft = (float)newCap * loadFactor;
-        newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ? (int)ft : Integer.MAX_VALUE);
-    }
-    threshold = newThr;
-    @SuppressWarnings({"rawtypes","unchecked"})
-        Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
-    table = newTab;
-    if (oldTab != null) {
-        // 把每个bucket都移动到新的buckets中
-        for (int j = 0; j < oldCap; ++j) {
-            Node<K,V> e;
-            if ((e = oldTab[j]) != null) {
-                oldTab[j] = null;
-                if (e.next == null)
-                    newTab[e.hash & (newCap - 1)] = e;
-                else if (e instanceof TreeNode)
-                    ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
-                else { 
-                    Node<K,V> loHead = null, loTail = null;
-                    Node<K,V> hiHead = null, hiTail = null;
-                    Node<K,V> next;
-                    do {
-                        next = e.next;
-                        // 原索引
-                        if ((e.hash & oldCap) == 0) {
-                            if (loTail == null)
-                                loHead = e;
-                            else
-                                loTail.next = e;
-                            loTail = e;
-                        }
-                        // 原索引+oldCap
-                        else {
-                            if (hiTail == null)
-                                hiHead = e;
-                            else
-                                hiTail.next = e;
-                            hiTail = e;
-                        }
-                    } while ((e = next) != null);
-                    // 原索引放到bucket里
-                    if (loTail != null) {
-                        loTail.next = null;
-                        newTab[j] = loHead;
-                    }
-                    // 原索引+oldCap放到bucket里
-                    if (hiTail != null) {
-                        hiTail.next = null;
-                        newTab[j + oldCap] = hiHead;
-                    }
-                }
-            }
-        }
-    }
-    return newTab;
-}
-
+final Node<K,V>[] resize() {    Node<K,V>[] oldTab = table;    int oldCap = (oldTab == null) ? 0 : oldTab.length;    int oldThr = threshold;    int newCap, newThr = 0;    if (oldCap > 0) {        // 超过最大值就不再扩充了，就只好随你碰撞去吧        if (oldCap >= MAXIMUM_CAPACITY) {            threshold = Integer.MAX_VALUE;            return oldTab;        }        // 没超过最大值，就扩充为原来的2倍        else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY && oldCap >= DEFAULT_INITIAL_CAPACITY)            newThr = oldThr << 1; // double threshold    }    else if (oldThr > 0) // initial capacity was placed in threshold        newCap = oldThr;    else {         // signifies using defaults        newCap = DEFAULT_INITIAL_CAPACITY;        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);    }    // 计算新的resize上限    if (newThr == 0) {        float ft = (float)newCap * loadFactor;        newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ? (int)ft : Integer.MAX_VALUE);    }    threshold = newThr;    @SuppressWarnings({"rawtypes","unchecked"})        Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];    table = newTab;    if (oldTab != null) {        // 把每个bucket都移动到新的buckets中        for (int j = 0; j < oldCap; ++j) {            Node<K,V> e;            if ((e = oldTab[j]) != null) {                oldTab[j] = null;                if (e.next == null)                    newTab[e.hash & (newCap - 1)] = e;                else if (e instanceof TreeNode)                    ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);                else {                     Node<K,V> loHead = null, loTail = null;                    Node<K,V> hiHead = null, hiTail = null;                    Node<K,V> next;                    do {                        next = e.next;                        // 原索引                        if ((e.hash & oldCap) == 0) {                            if (loTail == null)                                loHead = e;                            else                                loTail.next = e;                            loTail = e;                        }                        // 原索引+oldCap                        else {                            if (hiTail == null)                                hiHead = e;                            else                                hiTail.next = e;                            hiTail = e;                        }                    } while ((e = next) != null);                    // 原索引放到bucket里                    if (loTail != null) {                        loTail.next = null;                        newTab[j] = loHead;                    }                    // 原索引+oldCap放到bucket里                    if (hiTail != null) {                        hiTail.next = null;                        newTab[j + oldCap] = hiHead;                    }                }            }        }    }    return newTab;}
 ```
 
 ##### HashMap常用方法测试
 
 ```java
-package map;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
-
-public class HashMapDemo {
-
-    public static void main(String[] args) {
-        HashMap<String, String> map = new HashMap<String, String>();
-        // 键不能重复，值可以重复
-        map.put("san", "张三");
-        map.put("si", "李四");
-        map.put("wu", "王五");
-        map.put("wang", "老王");
-        map.put("wang", "老王2");// 老王被覆盖
-        map.put("lao", "老王");
-        System.out.println("-------直接输出hashmap:-------");
-        System.out.println(map);
-        /**
-             * 遍历HashMap
-             */
-        // 1.获取Map中的所有键
-        System.out.println("-------foreach获取Map中所有的键:------");
-        Set<String> keys = map.keySet();
-        for (String key : keys) {
-            System.out.print(key+"  ");
-        }
-        System.out.println();//换行
-        // 2.获取Map中所有值
-        System.out.println("-------foreach获取Map中所有的值:------");
-        Collection<String> values = map.values();
-        for (String value : values) {
-            System.out.print(value+"  ");
-        }
-        System.out.println();//换行
-        // 3.得到key的值的同时得到key所对应的值
-        System.out.println("-------得到key的值的同时得到key所对应的值:-------");
-        Set<String> keys2 = map.keySet();
-        for (String key : keys2) {
-            System.out.print(key + "：" + map.get(key)+"   ");
-
-        }
-        /**
-             * 如果既要遍历key又要value，那么建议这种方式，应为如果先获取keySet然后再执行map.get(key)，map内部会执行两次遍历。
-             * 一次是在获取keySet的时候，一次是在遍历所有key的时候。
-             */
-        // 当我调用put(key,value)方法的时候，首先会把key和value封装到
-        // Entry这个静态内部类对象中，把Entry对象再添加到数组中，所以我们想获取
-        // map中的所有键值对，我们只要获取数组中的所有Entry对象，接下来
-        // 调用Entry对象中的getKey()和getValue()方法就能获取键值对了
-        Set<java.util.Map.Entry<String, String>> entrys = map.entrySet();
-        for (java.util.Map.Entry<String, String> entry : entrys) {
-            System.out.println(entry.getKey() + "--" + entry.getValue());
-        }
-
-        /**
-             * HashMap其他常用方法
-             */
-        System.out.println("after map.size()："+map.size());
-        System.out.println("after map.isEmpty()："+map.isEmpty());
-        System.out.println(map.remove("san"));
-        System.out.println("after map.remove()："+map);
-        System.out.println("after map.get(si)："+map.get("si"));
-        System.out.println("after map.containsKey(si)："+map.containsKey("si"));
-        System.out.println("after containsValue(李四)："+map.containsValue("李四"));
-        System.out.println(map.replace("si", "李四2"));
-        System.out.println("after map.replace(si, 李四2):"+map);
-    }
-
-}
-
-
+package map;import java.util.Collection;import java.util.HashMap;import java.util.Set;public class HashMapDemo {    public static void main(String[] args) {        HashMap<String, String> map = new HashMap<String, String>();        // 键不能重复，值可以重复        map.put("san", "张三");        map.put("si", "李四");        map.put("wu", "王五");        map.put("wang", "老王");        map.put("wang", "老王2");// 老王被覆盖        map.put("lao", "老王");        System.out.println("-------直接输出hashmap:-------");        System.out.println(map);        /**             * 遍历HashMap             */        // 1.获取Map中的所有键        System.out.println("-------foreach获取Map中所有的键:------");        Set<String> keys = map.keySet();        for (String key : keys) {            System.out.print(key+"  ");        }        System.out.println();//换行        // 2.获取Map中所有值        System.out.println("-------foreach获取Map中所有的值:------");        Collection<String> values = map.values();        for (String value : values) {            System.out.print(value+"  ");        }        System.out.println();//换行        // 3.得到key的值的同时得到key所对应的值        System.out.println("-------得到key的值的同时得到key所对应的值:-------");        Set<String> keys2 = map.keySet();        for (String key : keys2) {            System.out.print(key + "：" + map.get(key)+"   ");        }        /**             * 如果既要遍历key又要value，那么建议这种方式，应为如果先获取keySet然后再执行map.get(key)，map内部会执行两次遍历。             * 一次是在获取keySet的时候，一次是在遍历所有key的时候。             */        // 当我调用put(key,value)方法的时候，首先会把key和value封装到        // Entry这个静态内部类对象中，把Entry对象再添加到数组中，所以我们想获取        // map中的所有键值对，我们只要获取数组中的所有Entry对象，接下来        // 调用Entry对象中的getKey()和getValue()方法就能获取键值对了        Set<java.util.Map.Entry<String, String>> entrys = map.entrySet();        for (java.util.Map.Entry<String, String> entry : entrys) {            System.out.println(entry.getKey() + "--" + entry.getValue());        }        /**             * HashMap其他常用方法             */        System.out.println("after map.size()："+map.size());        System.out.println("after map.isEmpty()："+map.isEmpty());        System.out.println(map.remove("san"));        System.out.println("after map.remove()："+map);        System.out.println("after map.get(si)："+map.get("si"));        System.out.println("after map.containsKey(si)："+map.containsKey("si"));        System.out.println("after containsValue(李四)："+map.containsValue("李四"));        System.out.println(map.replace("si", "李四2"));        System.out.println("after map.replace(si, 李四2):"+map);    }}
 ```
 
 
@@ -778,26 +401,7 @@ public class HashMapDemo {
 放在Node节点里面  
 
 ```java
-//Node 节点
-private static class Node<K, V> {
-    int hash;
-    K key;
-    V value;
-    Node<K, V> next;
-
-    public Node(int hash, K key, V value, Node<K, V> next) {
-        this.hash = hash;
-        this.key = key;
-        this.value = value;
-        this.next = next;
-    }
-
-    @Override
-    public String toString() {
-        return key + "=" + value;
-    }
-}
-
+//Node 节点private static class Node<K, V> {    int hash;    K key;    V value;    Node<K, V> next;    public Node(int hash, K key, V value, Node<K, V> next) {        this.hash = hash;        this.key = key;        this.value = value;        this.next = next;    }    @Override    public String toString() {        return key + "=" + value;    }}
 ```
 
 
@@ -925,7 +529,7 @@ key和value都可以为空，如果两个键都为null的话，后面加进来�
 
 ### 15.集合框架
 
-![1586522289820](../media/pictures/Collection.assets/Typora)
+![1586522289820](D:/Code/Blog/JavaInterview/media/pictures/Collection.assets/Typora)
 
 ![1586522321227](../media/pictures/Collection.assets/1586522321227.png)
 
@@ -964,21 +568,13 @@ HashMap的扩容机制：
 resize（）方法，首先判断超没超过最大值，如果超过最大值就不在扩容啦，如果没有超过最大值，就进容量扩大到原来的两倍。
 
 ```java
-// 没超过最大值，就扩充为原来的2倍
-else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY && oldCap >= DEFAULT_INITIAL_CAPACITY)
-            newThr = oldThr << 1; // double threshold  移位运算符是亮点
-    }
-
+// 没超过最大值，就扩充为原来的2倍else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY && oldCap >= DEFAULT_INITIAL_CAPACITY)            newThr = oldThr << 1; // double threshold  移位运算符是亮点    }
 ```
 
 ArrayList的扩容机制：
 
 ```java
-//将oldCapacity 右移一位，其效果相当于oldCapacity /2，
-//我们知道位运算的速度远远快于整除运算，整句运算式的结果就是将新容量更新为旧容量的1.5倍，
-	int newCapacity = oldCapacity + (oldCapacity >> 1);
-//然后检查新容量是否大于最小需要容量，若还是小于最小需要容量，那么就把最小需要容量当作数组的新容量，
-
+//将oldCapacity 右移一位，其效果相当于oldCapacity /2，//我们知道位运算的速度远远快于整除运算，整句运算式的结果就是将新容量更新为旧容量的1.5倍，	int newCapacity = oldCapacity + (oldCapacity >> 1);//然后检查新容量是否大于最小需要容量，若还是小于最小需要容量，那么就把最小需要容量当作数组的新容量，
 ```
 
 
@@ -1004,12 +600,7 @@ ArrayList的扩容机制：
 **这就是 Java 7 中 ArrayList 和 HashMap  类 的代码片段：**
 
 ```java
-// from ArrayList.java JDK 1.7
-private  static  final  int  DEFAULT_CAPACITY = 10;
- 
-//from HashMap.java JDK 7
-static  final  int  DEFAULT_INITIAL_CAPACITY = 1  << 4; // aka 16
-
+// from ArrayList.java JDK 1.7private  static  final  int  DEFAULT_CAPACITY = 10; //from HashMap.java JDK 7static  final  int  DEFAULT_INITIAL_CAPACITY = 1  << 4; // aka 16
 ```
 
 
@@ -1081,22 +672,7 @@ static  final  int  DEFAULT_INITIAL_CAPACITY = 1  << 4; // aka 16
 ### 20. ArrayList list = new ArrayList（20）需要扩容几次
 
 ```java
-/**
-* 带初始容量参数的构造函数。（用户自己指定容量）
-*/
-public ArrayList(int initialCapacity) {
-    if (initialCapacity > 0) {//初始容量大于0
-        //创建initialCapacity大小的数组
-        this.elementData = new Object[initialCapacity];  //###这就是答案 扩容0次
-    } else if (initialCapacity == 0) {//初始容量等于0
-        //创建空数组
-        this.elementData = EMPTY_ELEMENTDATA;
-    } else {//初始容量小于0，抛出异常
-        throw new IllegalArgumentException("Illegal Capacity: "+
-                                           initialCapacity);
-    }
-}
-
+/*** 带初始容量参数的构造函数。（用户自己指定容量）*/public ArrayList(int initialCapacity) {    if (initialCapacity > 0) {//初始容量大于0        //创建initialCapacity大小的数组        this.elementData = new Object[initialCapacity];  //###这就是答案 扩容0次    } else if (initialCapacity == 0) {//初始容量等于0        //创建空数组        this.elementData = EMPTY_ELEMENTDATA;    } else {//初始容量小于0，抛出异常        throw new IllegalArgumentException("Illegal Capacity: "+                                           initialCapacity);    }}
 ```
 
 这种是指定数组大小的创建，创建时直接分配其大小，没有扩充。一次性为创建了传入的数字的长度的数组，所以，扩充为0次。
@@ -1143,11 +719,7 @@ pCur是需要反转的节点。
 **伪代码**
 
 ```java
-1 prev.next = pCur.next;
-2 pCur.next = dummy.next;
-3 dummy.next = pCur;
-4 pCur = prev.next;
-
+1 prev.next = pCur.next;2 pCur.next = dummy.next;3 dummy.next = pCur;4 pCur = prev.next;
 ```
 
 
@@ -1155,30 +727,7 @@ pCur是需要反转的节点。
 今天在leetcode看到一个单链表翻转的原题：
 
 ```java
-public class ListNode { //运行的时候 要把这里注释掉
-    int val;
-    ListNode next;
-
-    ListNode(int x) {
-        val = x;
-    }
-}
-
-class Solution {
-    public int[] reversePrint(ListNode head) {
-        Stack<ListNode> stack = new Stack<>();
-        ListNode temp = head;
-        while (temp != null) {
-            stack.push(temp);
-            temp = temp.next;
-        }
-        int[] arr = new int[stack.size()];
-        for (int i = 0; i < arr.length; i++){
-            arr[i] = stack.pop().val;  //栈顶端的元素 同时出栈
-        }
-        return arr;
-    }
-
+public class ListNode { //运行的时候 要把这里注释掉    int val;    ListNode next;    ListNode(int x) {        val = x;    }}class Solution {    public int[] reversePrint(ListNode head) {        Stack<ListNode> stack = new Stack<>();        ListNode temp = head;        while (temp != null) {            stack.push(temp);            temp = temp.next;        }        int[] arr = new int[stack.size()];        for (int i = 0; i < arr.length; i++){            arr[i] = stack.pop().val;  //栈顶端的元素 同时出栈        }        return arr;    }
 ```
 
 
@@ -1190,44 +739,13 @@ class Solution {
 斐波那契数列：
 
 ```java
-public static int fibSeq(int n){
-    if(n<0){
-        throw new IllegalArgumentException("the param is less than 0");
-    }
-    if(n==0)
-        return 0;
-
-    if(n==1)
-        return 1;
-    return fibSeq(n-1);+fibSeq(n-2);
-}
-
-//王道的经典50道java题写法：
-private static int fun(int n){
-    if(n==1 || n==2)
-        return 1;
-    else
-        return fun(n-1)+fun(n-2);
-}
-
-
+public static int fibSeq(int n){    if(n<0){        throw new IllegalArgumentException("the param is less than 0");    }    if(n==0)        return 0;    if(n==1)        return 1;    return fibSeq(n-1);+fibSeq(n-2);}//王道的经典50道java题写法：private static int fun(int n){    if(n==1 || n==2)        return 1;    else        return fun(n-1)+fun(n-2);}
 ```
 
 爬楼梯：
 
 ```
-public static int fibSeq(int n){
-    if(n<0){
-        throw new IllegalArgumentException("the param is less than 0");
-    }
-    if(n==1)
-        return 1;
-
-    if(n==2)
-        return 2;
-    return fibSeq(n-1);+fibSeq(n-2);
-}
-
+public static int fibSeq(int n){    if(n<0){        throw new IllegalArgumentException("the param is less than 0");    }    if(n==1)        return 1;    if(n==2)        return 2;    return fibSeq(n-1);+fibSeq(n-2);}
 ```
 
 
@@ -1237,34 +755,13 @@ public static int fibSeq(int n){
 斐波那契数列：
 
 ```java
-public int fib(int n) { //动态规划做
-    int a = 0;
-    int b = 1;
-    int sum;
-    for (int i = 0;i<n;i++) {
-        sum = (a + b) % 1000000007;
-        a = b;
-        b = sum;
-    }
-    return a; 
-}
-
+public int fib(int n) { //动态规划做    int a = 0;    int b = 1;    int sum;    for (int i = 0;i<n;i++) {        sum = (a + b) % 1000000007;        a = b;        b = sum;    }    return a; }
 ```
 
 青蛙跳台阶：
 
 ```java
-public int fib(int n) { //动态规划做
-    int a = 1;
-    int b = 2;
-    int sum;
-    for (int i = 0;i<n;i++) {
-        sum = (a + b) % 1000000007;
-        a = b;
-        b = sum;
-    }
-    return a;
-
+public int fib(int n) { //动态规划做    int a = 1;    int b = 2;    int sum;    for (int i = 0;i<n;i++) {        sum = (a + b) % 1000000007;        a = b;        b = sum;    }    return a;
 ```
 
 上面两个是不同的，主要体现在初始值a，b不同，Leetcode剑指offer上面指出：
@@ -1510,32 +1007,7 @@ logB(N)
 当多个线程需要put的数据hash值相同，需要放置在同一位置时，**并没有对put方法进行同步的实现**。所以，在调用Entrty方法的时候，**会造成只有最后执行的线程可以将其值放进map对象中**。
 
 ```java
-public Object put(Object obj, Object obj1)  
-    {  
-        if(table == EMPTY_TABLE)  
-            inflateTable(threshold);  
-        if(obj == null)  
-            return putForNullKey(obj1);  
-        int i = hash(obj);  
-        int j = indexFor(i, table.length);  
-        for(Entry entry = table[j]; entry != null; entry = entry.next)  
-        {  
-            Object obj2;  
-            if(entry.hash == i && ((obj2 = entry.key) == obj || obj.equals(obj2)))  
-            {  
-                Object obj3 = entry.value;  
-                entry.value = obj1;  
-                entry.recordAccess(this);  
-                return obj3;  
-            }  
-        }  
-
-    modCount++;  
-    //在此处造成数据丢失
-    addEntry(i, obj, obj1, j);  
-    return null;  
-}  
-
+public Object put(Object obj, Object obj1)      {          if(table == EMPTY_TABLE)              inflateTable(threshold);          if(obj == null)              return putForNullKey(obj1);          int i = hash(obj);          int j = indexFor(i, table.length);          for(Entry entry = table[j]; entry != null; entry = entry.next)          {              Object obj2;              if(entry.hash == i && ((obj2 = entry.key) == obj || obj.equals(obj2)))              {                  Object obj3 = entry.value;                  entry.value = obj1;                  entry.recordAccess(this);                  return obj3;              }          }      modCount++;      //在此处造成数据丢失    addEntry(i, obj, obj1, j);      return null;  }  
 ```
 
 参考：https://blog.csdn.net/qq_37901489/article/details/88818356（三个问题及原因）
@@ -1565,23 +1037,7 @@ public Object put(Object obj, Object obj1)
 使用Iterator的remove()方法的实现方式如下所示：
 
 ```java
-public static void main(String[] args) {
-    List<String> platformList = new ArrayList<>();
-    platformList.add("博客园");
-    platformList.add("CSDN");
-    platformList.add("掘金");
-
-    Iterator<String> iterator = platformList.iterator();
-    while (iterator.hasNext()) {
-        String platform = iterator.next();
-        if (platform.equals("博客园")) {
-            iterator.remove();
-        }
-    }
-
-    System.out.println(platformList);
-}
-
+public static void main(String[] args) {    List<String> platformList = new ArrayList<>();    platformList.add("博客园");    platformList.add("CSDN");    platformList.add("掘金");    Iterator<String> iterator = platformList.iterator();    while (iterator.hasNext()) {        String platform = iterator.next();        if (platform.equals("博客园")) {            iterator.remove();        }    }    System.out.println(platformList);}
 ```
 
 第三种方法：（这种方法好记，不用对索引做i--）
@@ -1589,23 +1045,7 @@ public static void main(String[] args) {
 用for循环倒序：
 
 ```java
-public static void main(String[] args) {
-    List<String> platformList = new ArrayList<>();
-    platformList.add("博客园");
-    platformList.add("CSDN");
-    platformList.add("掘金");
-
-    for (int i = platformList.size() - 1; i >= 0; i--) {
-        String item = platformList.get(i);
-
-        if (item.equals("掘金")) {
-            platformList.remove(i);
-        }
-    }
-
-    System.out.println(platformList);
-}
-
+public static void main(String[] args) {    List<String> platformList = new ArrayList<>();    platformList.add("博客园");    platformList.add("CSDN");    platformList.add("掘金");    for (int i = platformList.size() - 1; i >= 0; i--) {        String item = platformList.get(i);        if (item.equals("掘金")) {            platformList.remove(i);        }    }    System.out.println(platformList);}
 ```
 
 
@@ -1669,25 +1109,7 @@ public static void main(String[] args) {
 
 
 ```java
-public static void move(int disk, char M, char N ){
-    System.out.println("第"+(++times)+"次移动, 盘子"+disk+ "  "+M+"------->"+N);
-}
-
-
-public static void hannoi(int n, char A, char B, char C){
-    if(n == 1){
-        move(n, A, C);
-    }else{
-        //移动上一关的步骤移动到B
-        hannoi(n - 1, A, C, B);
-        //把最大的盘子移动C塔
-        move(n, A, C);
-        //再把B上的上一关的盘子移动到C上就可以了
-        hannoi(n - 1, B, A, C);
-
-    }
-}
-
+public static void move(int disk, char M, char N ){    System.out.println("第"+(++times)+"次移动, 盘子"+disk+ "  "+M+"------->"+N);}public static void hannoi(int n, char A, char B, char C){    if(n == 1){        move(n, A, C);    }else{        //移动上一关的步骤移动到B        hannoi(n - 1, A, C, B);        //把最大的盘子移动C塔        move(n, A, C);        //再把B上的上一关的盘子移动到C上就可以了        hannoi(n - 1, B, A, C);    }}
 ```
 
 
@@ -1751,12 +1173,7 @@ LeetCode94：
 输入: [1,null,2,3]
 
 ```java
-   1
-    \
-     2
-    /
-   3
-
+   1    \     2    /   3
 ```
 
 输出: [1,3,2]
@@ -1767,36 +1184,7 @@ LeetCode94：
 **递归写法：**
 
 ```java
-//首先需要一个节点
-public class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
-
-    TreeNode(int x) {
-        val = x;
-    }
-}
-
-//正式的代码  helper是一个辅助函数 这样的话，可以让代码更加清晰
-public List<Integer> inorderTraversal(TreeNode root) {
-    List<Integer> result = new ArrayList<>();
-    helper(root,result);
-    return result;
-}
-
-public void helper(TreeNode root,List<Integer> result){
-    if (root!= null){
-        if (root.left != null){
-            helper(root.left,result);
-        }
-        result.add(root.val);
-        if (root.right != null){
-            helper(root.right,result);
-        }
-    }
-}
-
+//首先需要一个节点public class TreeNode {    int val;    TreeNode left;    TreeNode right;    TreeNode(int x) {        val = x;    }}//正式的代码  helper是一个辅助函数 这样的话，可以让代码更加清晰public List<Integer> inorderTraversal(TreeNode root) {    List<Integer> result = new ArrayList<>();    helper(root,result);    return result;}public void helper(TreeNode root,List<Integer> result){    if (root!= null){        if (root.left != null){            helper(root.left,result);        }        result.add(root.val);        if (root.right != null){            helper(root.right,result);        }    }}
 ```
 
 复杂度分析
@@ -1809,86 +1197,7 @@ public void helper(TreeNode root,List<Integer> result){
 **非递归写法:**
 
 ```java
-/**
-     * 前序遍历
-     * 非递归
-     */
-public void preOrder1(BinaryNode<AnyType> Node)
-{
-    Stack<BinaryNode> stack = new Stack<>();
-    while(Node != null || !stack.Empty())
-    {
-        while(Node != null)
-        {
-            System.out.print(Node.element + "   ");
-            stack.push(Node);
-            Node = Node.left;
-        }
-        if(!stack.empty())
-        {
-            Node = stack.pop();
-            Node = Node.right;
-        }
-    }
-}
-
-/**
-     * 中序遍历
-     * 非递归
-     */
-public void midOrder1(BinaryNode<AnyType> Node)
-{
-    Stack<BinaryNode> stack = new Stack<>();
-    while(Node != null || !stack.Empty())
-    {
-        while (Node != null)
-        {
-            stack.push(Node);
-            Node = Node.left;
-        }
-        if(!stack.empty())
-        {
-            Node = stack.pop();
-            System.out.print(Node.element + "   ");
-            Node = Node.right;
-        }
-    }
-}
-
-/**
-     * 后序遍历
-     * 非递归
-     */
-public void posOrder1(BinaryNode<AnyType> Node)
-{
-    Stack<BinaryNode> stack1 = new Stack<>();
-    Stack<Integer> stack2 = new Stack<>();
-    int i = 1;
-    while(Node != null || !stack1.empty())
-    {
-        while (Node != null)
-        {
-            stack1.push(Node);
-            stack2.push(0);
-            Node = Node.left;
-        }
-
-        while(!stack1.empty() && stack2.peek() == i)
-        {
-            stack2.pop();
-            System.out.print(stack1.pop().element + "   ");
-        }
-
-        if(!stack1.empty())
-        {
-            stack2.pop();
-            stack2.push(1);
-            Node = stack1.peek();
-            Node = Node.right;
-        }
-    }
-}
-
+/**     * 前序遍历     * 非递归     */public void preOrder1(BinaryNode<AnyType> Node){    Stack<BinaryNode> stack = new Stack<>();    while(Node != null || !stack.Empty())    {        while(Node != null)        {            System.out.print(Node.element + "   ");            stack.push(Node);            Node = Node.left;        }        if(!stack.empty())        {            Node = stack.pop();            Node = Node.right;        }    }}/**     * 中序遍历     * 非递归     */public void midOrder1(BinaryNode<AnyType> Node){    Stack<BinaryNode> stack = new Stack<>();    while(Node != null || !stack.Empty())    {        while (Node != null)        {            stack.push(Node);            Node = Node.left;        }        if(!stack.empty())        {            Node = stack.pop();            System.out.print(Node.element + "   ");            Node = Node.right;        }    }}/**     * 后序遍历     * 非递归     */public void posOrder1(BinaryNode<AnyType> Node){    Stack<BinaryNode> stack1 = new Stack<>();    Stack<Integer> stack2 = new Stack<>();    int i = 1;    while(Node != null || !stack1.empty())    {        while (Node != null)        {            stack1.push(Node);            stack2.push(0);            Node = Node.left;        }        while(!stack1.empty() && stack2.peek() == i)        {            stack2.pop();            System.out.print(stack1.pop().element + "   ");        }        if(!stack1.empty())        {            stack2.pop();            stack2.push(1);            Node = stack1.peek();            Node = Node.right;        }    }}
 ```
 
 
@@ -1920,10 +1229,7 @@ https://blog.csdn.net/billy1900/article/details/86229656 （讲了为什么要�
 ### 49.a 、b两个整数值，如何在不引入第三个变量的情况下，交换a 、b的值？
 
 ```java
-a = a^b;
-b = b^a;
-a = a^b;
-
+a = a^b;b = b^a;a = a^b;
 ```
 
 
@@ -1961,13 +1267,7 @@ a = a^b;
 LeetCode88题。
 
 ```java
-class Solution {
-    public void merge(int[] nums1, int m, int[] nums2, int n) {
-        System.arraycopy(nums2, 0, nums1, m, n);
-        Arrays.sort(nums1);
-   }
-}
-
+class Solution {    public void merge(int[] nums1, int m, int[] nums2, int n) {        System.arraycopy(nums2, 0, nums1, m, n);        Arrays.sort(nums1);   }}
 ```
 
 System.arrayCopy(Object srcArray,int srcPos,Object destArray ,int destPos,int length)
@@ -1990,7 +1290,6 @@ int length 原数组的长度
 
 ```
 。。。
-
 ```
 
 ### 常用排序
@@ -1998,34 +1297,7 @@ int length 原数组的长度
 #### 冒泡排序
 
 ```java
-public class BubbleSort {
-    public static void main(String[] args) {
-        int[] arr = {5, 1, 2, 9, 0, 8, 7, 6, 4, 3};
-        sort(arr);
-        System.out.println(Arrays.toString(arr));
-    }
-
-    public static void sort(int[] arr) {
-        if (arr == null || arr.length <= 1) return ;
-        // 冒泡的次数
-        for (int i = 0; i < arr.length - 1; i++) {
-            boolean isSorted = true; // 默认数组是有序的
-            for (int j = 0; j < arr.length - 1 - i; j++) {
-                if(arr[j] > arr[j+1]) {
-                    // 交换元素
-                    int temp = arr[j];
-                    arr[j] = arr[j+1];
-                    arr[j+1] = temp;
-                    isSorted = false;
-                }
-                System.out.println(Arrays.toString(arr));
-            }
-            if (isSorted) return ;
-        }
-    }
-}
-
-
+public class BubbleSort {    public static void main(String[] args) {        int[] arr = {5, 1, 2, 9, 0, 8, 7, 6, 4, 3};        sort(arr);        System.out.println(Arrays.toString(arr));    }    public static void sort(int[] arr) {        if (arr == null || arr.length <= 1) return ;        // 冒泡的次数        for (int i = 0; i < arr.length - 1; i++) {            boolean isSorted = true; // 默认数组是有序的            for (int j = 0; j < arr.length - 1 - i; j++) {                if(arr[j] > arr[j+1]) {                    // 交换元素                    int temp = arr[j];                    arr[j] = arr[j+1];                    arr[j+1] = temp;                    isSorted = false;                }                System.out.println(Arrays.toString(arr));            }            if (isSorted) return ;        }    }}
 ```
 
 #### 二分排序
@@ -2037,48 +1309,7 @@ public class BubbleSort {
 #### 快速排序
 
 ```java
-public class QuickSort {
-    public static void sort(int[] arr) {
-        if (arr == null || arr.length <= 1) return ;
-        quickSort(arr, 0, arr.length - 1);
-    }
-
-    private static void quickSort(int[] arr, int low, int high) {
-        if (low >= high) return ;
-        // 分区操作
-        int index = partition(arr, low, high);
-        // 对左边进行快速排序
-        quickSort(arr, low, index - 1);
-        // 对右边进行快速排序
-        quickSort(arr, index + 1, high);
-    }
-
-    private static int partition(int[] arr, int low, int high) {
-        int pivot = arr[low];
-        int left = low;
-        int right = high;
-        while (left < right) {
-            while (left < right && arr[right] >= pivot) {
-                right--;
-            }
-            arr[left] = arr[right];
-            while (left < right && arr[left] <= pivot) {
-                left++;
-            }
-            arr[right] = arr[left];
-        }
-        arr[left] = pivot;
-        return left;
-    }
-
-    public static void main(String[] args) {
-        int[] arr = {5, 1, 2, 9, 0, 8, 7, 6, 4, 3};
-        System.out.println("------------------------------");
-        sort(arr);
-        // System.out.println(Arrays.toString(arr));
-    }
-}
-
+public class QuickSort {    public static void sort(int[] arr) {        if (arr == null || arr.length <= 1) return ;        quickSort(arr, 0, arr.length - 1);    }    private static void quickSort(int[] arr, int low, int high) {        if (low >= high) return ;        // 分区操作        int index = partition(arr, low, high);        // 对左边进行快速排序        quickSort(arr, low, index - 1);        // 对右边进行快速排序        quickSort(arr, index + 1, high);    }    private static int partition(int[] arr, int low, int high) {        int pivot = arr[low];        int left = low;        int right = high;        while (left < right) {            while (left < right && arr[right] >= pivot) {                right--;            }            arr[left] = arr[right];            while (left < right && arr[left] <= pivot) {                left++;            }            arr[right] = arr[left];        }        arr[left] = pivot;        return left;    }    public static void main(String[] args) {        int[] arr = {5, 1, 2, 9, 0, 8, 7, 6, 4, 3};        System.out.println("------------------------------");        sort(arr);        // System.out.println(Arrays.toString(arr));    }}
 ```
 
 ![img](../media/pictures/Collection.assets/clipboard.png)
@@ -2121,71 +1352,13 @@ public class QuickSort {
 示例代码：
 
 ```java
-public class ArrayListTest {
- 
-    public static void main(String[] args) {
-        normalFor(getList());   //普通循环
-        iterator(getList());      //增强循环-迭代器
-        forEach(getList());     //增强循环-foreach方式
-    }
- 
-    //普通循环
-    private static void normalFor(List<String> list) {
-        for (int i = 0 ; i < list.size() ; i++){
-            if ("b".equalsIgnoreCase(list.get(i)) || "c".equalsIgnoreCase(list.get(i))){
-                list.remove(i);
-            }
-        }
-        System.out.println("normalFor:"+JSONObject.toJSONString(list));
-    }
- 
-　　//增强循环-迭代器
-　　private static void iterator(List<String> list) {
-        Iterator iterator = list.iterator();
-        while (iterator.hasNext()){
-            String str = (String) iterator.next();
-            if ("b".equalsIgnoreCase(str) || "c".equalsIgnoreCase(str)){
-                iterator.remove();
-            }
-        }
-        System.out.println("iterator:"+JSONObject.toJSONString(list));
-    }
-　　 //增强循环-foreach方式
-    private static void forEach(List<String> list) {
-        for (String str : list){
-            if ("b".equalsIgnoreCase(str) || "c".equalsIgnoreCase(str)){
-                list.remove(str);
-            }
-        }
-        System.out.println("forEach:"+JSONObject.toJSONString(list));
-    }
- 
-    private static List<String> getList(){
-        List<String> list = new ArrayList<>();
-        list.add("a");
-        list.add("b");
-        list.add("c");
-        list.add("d");
-        list.add("e");
-        return list;
-    }
-}
-
+public class ArrayListTest {     public static void main(String[] args) {        normalFor(getList());   //普通循环        iterator(getList());      //增强循环-迭代器        forEach(getList());     //增强循环-foreach方式    }     //普通循环    private static void normalFor(List<String> list) {        for (int i = 0 ; i < list.size() ; i++){            if ("b".equalsIgnoreCase(list.get(i)) || "c".equalsIgnoreCase(list.get(i))){                list.remove(i);            }        }        System.out.println("normalFor:"+JSONObject.toJSONString(list));    } 　　//增强循环-迭代器　　private static void iterator(List<String> list) {        Iterator iterator = list.iterator();        while (iterator.hasNext()){            String str = (String) iterator.next();            if ("b".equalsIgnoreCase(str) || "c".equalsIgnoreCase(str)){                iterator.remove();            }        }        System.out.println("iterator:"+JSONObject.toJSONString(list));    }　　 //增强循环-foreach方式    private static void forEach(List<String> list) {        for (String str : list){            if ("b".equalsIgnoreCase(str) || "c".equalsIgnoreCase(str)){                list.remove(str);            }        }        System.out.println("forEach:"+JSONObject.toJSONString(list));    }     private static List<String> getList(){        List<String> list = new ArrayList<>();        list.add("a");        list.add("b");        list.add("c");        list.add("d");        list.add("e");        return list;    }}
 ```
 
 运行结果：
 
 ```java
-normalFor:["a","c","d","e"]
-iterator:["a","d","e"]
-Exception in thread "main" java.util.ConcurrentModificationException
-　　at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:909)
-　　at java.util.ArrayList$Itr.next(ArrayList.java:859)
-　　at com.qxy.collection.ArrayListTest.forEach(ArrayListTest.java:47)
-　　at com.qxy.collection.ArrayListTest.main(ArrayListTest.java:21)
- 
-Process finished with exit code 1
-
+normalFor:["a","c","d","e"]iterator:["a","d","e"]Exception in thread "main" java.util.ConcurrentModificationException　　at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:909)　　at java.util.ArrayList$Itr.next(ArrayList.java:859)　　at com.qxy.collection.ArrayListTest.forEach(ArrayListTest.java:47)　　at com.qxy.collection.ArrayListTest.main(ArrayListTest.java:21) Process finished with exit code 1
 ```
 
 从上边可以看出
@@ -2213,41 +1386,7 @@ Process finished with exit code 1
 在分析之前，我们先来看看反编译之后的代代码
 
 ```java
-public class ArrayListTest {
-    ...
-    private static void iterator(List<String> list) {
-        Iterator iterator = list.iterator();
-        while(true) {
-            String str;
-            do {
-                if (!iterator.hasNext()) {
-                    System.out.println("iterator:" + JSONObject.toJSONString(list));
-                    return;
-                }
-                str = (String)iterator.next();
-            } while(!"b".equalsIgnoreCase(str) && !"c".equalsIgnoreCase(str));
- 
-            iterator.remove();//不同的地方：调用迭代器的remove方法
-        }
-    }
-    private static void forEach(List<String> list) {
-        Iterator var1 = list.iterator();
-        while(true) {
-            String str;
-            do {
-                if (!var1.hasNext()) {
-                    System.out.println("forEach:" + JSONObject.toJSONString(list));
-                    return;
-                }
-                str = (String)var1.next();
-            } while(!"b".equalsIgnoreCase(str) && !"c".equalsIgnoreCase(str));
- 
-            list.remove(str);//不同的地方：调用list的remove方法
-        }
-    } 
-　　...
-} 
-
+public class ArrayListTest {    ...    private static void iterator(List<String> list) {        Iterator iterator = list.iterator();        while(true) {            String str;            do {                if (!iterator.hasNext()) {                    System.out.println("iterator:" + JSONObject.toJSONString(list));                    return;                }                str = (String)iterator.next();            } while(!"b".equalsIgnoreCase(str) && !"c".equalsIgnoreCase(str));             iterator.remove();//不同的地方：调用迭代器的remove方法        }    }    private static void forEach(List<String> list) {        Iterator var1 = list.iterator();        while(true) {            String str;            do {                if (!var1.hasNext()) {                    System.out.println("forEach:" + JSONObject.toJSONString(list));                    return;                }                str = (String)var1.next();            } while(!"b".equalsIgnoreCase(str) && !"c".equalsIgnoreCase(str));             list.remove(str);//不同的地方：调用list的remove方法        }    } 　　...} 
 ```
 
  从上边的代码来看，迭代器 和 foreach 的方法很类似，唯一的区别就是 remove() 方法
@@ -2261,40 +1400,7 @@ public class ArrayListTest {
 迭代器方式，那么需要先看 ArrayList.class
 
 ```java
-public Iterator<E> iterator() {
-    return new Itr();
-}
- 
-/**
- * An optimized version of AbstractList.Itr
- */
-private class Itr implements Iterator<E> {
-    int cursor;       // index of next element to return
-    int lastRet = -1; // index of last element returned; -1 if no such
-    int expectedModCount = modCount;　　//这个属性比较重要
- 
-    Itr() {}
-    ...
-    public void remove() {
-        if (lastRet < 0)
-            throw new IllegalStateException();
-        checkForComodification();　　//第一步
-        try {
-            ArrayList.this.remove(lastRet);　　//第二步：调用list的remove方法
-            cursor = lastRet;
-            lastRet = -1;
-            expectedModCount = modCount;　　　　//第三步：modCount是remove方法去维护更新，由于第一步中校验 modCount 和 expectedModCount 是否相当等
-        } catch (IndexOutOfBoundsException ex) {
-            throw new ConcurrentModificationException();
-        }
-    }
-    ...
-    final void checkForComodification() {
-        if (modCount != expectedModCount)
-            throw new ConcurrentModificationException();
-    }
-}
-
+public Iterator<E> iterator() {    return new Itr();} /** * An optimized version of AbstractList.Itr */private class Itr implements Iterator<E> {    int cursor;       // index of next element to return    int lastRet = -1; // index of last element returned; -1 if no such    int expectedModCount = modCount;　　//这个属性比较重要     Itr() {}    ...    public void remove() {        if (lastRet < 0)            throw new IllegalStateException();        checkForComodification();　　//第一步        try {            ArrayList.this.remove(lastRet);　　//第二步：调用list的remove方法            cursor = lastRet;            lastRet = -1;            expectedModCount = modCount;　　　　//第三步：modCount是remove方法去维护更新，由于第一步中校验 modCount 和 expectedModCount 是否相当等        } catch (IndexOutOfBoundsException ex) {            throw new ConcurrentModificationException();        }    }    ...    final void checkForComodification() {        if (modCount != expectedModCount)            throw new ConcurrentModificationException();    }}
 ```
 
 可以看到，list.iterator() 返回的是一个 Itr对象（ArrayList私有的实例内部类），执行 iterator.remove() 方法时，
@@ -2308,21 +1414,7 @@ private class Itr implements Iterator<E> {
 到此，你可能还想看看，ArrayList类中的remove方法
 
 ```java
-public E remove(int index) {
-    rangeCheck(index);
- 
-    modCount++;
-    E oldValue = elementData(index);
- 
-    int numMoved = size - index - 1;
-    if (numMoved > 0)
-        System.arraycopy(elementData, index+1, elementData, index,
-                         numMoved);
-    elementData[--size] = null; // clear to let GC do its work
- 
-    return oldValue;
-}
-
+public E remove(int index) {    rangeCheck(index);     modCount++;    E oldValue = elementData(index);     int numMoved = size - index - 1;    if (numMoved > 0)        System.arraycopy(elementData, index+1, elementData, index,                         numMoved);    elementData[--size] = null; // clear to let GC do its work     return oldValue;}
 ```
 
 看到此方法中，有一个modCount++的操作，也就是说，modCount会一直更新变化。
@@ -2338,24 +1430,7 @@ Read the fucking manual and source code
 在弄建投项目的时候：用到
 
 ```java
-for (int i = 0; i < tenantProductSuitInfos.size(); i++) {
-			if (
-     tenantProductSuitInfoDTO.getTenantAdminName() != null && 			  !"".equals(tenantProductSuitInfoDTO.getTenantAdminName())
-            ) {
-				if (tenantProductSuitInfos.get(i).getTenantAdminName() != null) {
-					if (!tenantProductSuitInfos.get(i).getTenantAdminName()
-                        .contains(tenantProductSuitInfoDTO.getTenantAdminName())) { 
-                        //包含的话说 会包含空字符串 去掉
-						tenantProductSuitInfos.remove(i);
-						i--; //这里注意 因为删除以后 后面的i 会往前顶 
-					}
-				}else {
-					tenantProductSuitInfos.remove(i);
-					i--; //这里注意 因为删除以后 后面的i 会往前顶 
-				}
-			}
-		}
-
+for (int i = 0; i < tenantProductSuitInfos.size(); i++) {			if (     tenantProductSuitInfoDTO.getTenantAdminName() != null && 			  !"".equals(tenantProductSuitInfoDTO.getTenantAdminName())            ) {				if (tenantProductSuitInfos.get(i).getTenantAdminName() != null) {					if (!tenantProductSuitInfos.get(i).getTenantAdminName()                        .contains(tenantProductSuitInfoDTO.getTenantAdminName())) {                         //包含的话说 会包含空字符串 去掉						tenantProductSuitInfos.remove(i);						i--; //这里注意 因为删除以后 后面的i 会往前顶 					}				}else {					tenantProductSuitInfos.remove(i);					i--; //这里注意 因为删除以后 后面的i 会往前顶 				}			}		}
 ```
 
 参考：https://www.cnblogs.com/qxynotebook/p/11253257.html
@@ -2444,13 +1519,13 @@ for (int i = 0; i < tenantProductSuitInfos.size(); i++) {
 
 
 
-## List去重
+### List去重
 
 参考：https://blog.csdn.net/yihuaiyan/article/details/94719541
 
 
 
-# 加密算法
+## 加密算法
 
 1.哪个类实现了md5算法，MD5算法加密过后的密文长度是几位？
 

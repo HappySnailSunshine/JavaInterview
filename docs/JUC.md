@@ -1,16 +1,10 @@
 # JUC
 
+并发 多线程
 
 
-## 目录
-
-[TOC]
 
 > 这里大多数问题是自己遇到的，问题答案大多数参考guide哥的文章。
-
-## 并发 多线程
-
-
 
 # Interview
 
@@ -304,9 +298,7 @@ ExecutorService pool = Executors.newFixedThreadPool(40);
 同样还有放币以后，也要给购买人发送短信
 
 ```java
-pool.submit(()->{
-	smsUtils.send(targetUser.getMobile(),"对方已经放币",null,null);
-});
+pool.submit(()->{	smsUtils.send(targetUser.getMobile(),"对方已经放币",null,null);});
 ```
 
 用多线程有一个好处就是，正常业务流程走完以后，启用多线程来发送这些比较没那么重要的请求，这样的话就不太影响主方法的进程，主方法继续往下走。
@@ -351,41 +343,7 @@ FixedThreadPool和SingleThread允许的请求队列长度为Integer.Max_value ,�
 按照阿里巴巴推荐的设置：
 
 ```java
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-public class ThreadPoolExecutorDemo {
-
-    private static final int CORE_POOL_SIZE = 5;
-    private static final int MAX_POOL_SIZE = 10;
-    private static final int QUEUE_CAPACITY = 100;
-    private static final Long KEEP_ALIVE_TIME = 1L;
-    public static void main(String[] args) {
-
-        //使用阿里巴巴推荐的创建线程池的方式
-        //通过ThreadPoolExecutor构造函数自定义参数创建
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                CORE_POOL_SIZE,
-                MAX_POOL_SIZE,
-                KEEP_ALIVE_TIME,
-                TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(QUEUE_CAPACITY),
-                new ThreadPoolExecutor.CallerRunsPolicy());
-
-        for (int i = 0; i < 10; i++) {
-            //创建WorkerThread对象（WorkerThread类实现了Runnable 接口）
-            Runnable worker = new MyRunnable("" + i);
-            //执行Runnable
-            executor.execute(worker);
-        }
-        //终止线程池
-        executor.shutdown();
-        while (!executor.isTerminated()) {
-        }
-        System.out.println("Finished all threads");
-    }
-}
+import java.util.concurrent.ArrayBlockingQueue;import java.util.concurrent.ThreadPoolExecutor;import java.util.concurrent.TimeUnit;public class ThreadPoolExecutorDemo {    private static final int CORE_POOL_SIZE = 5;    private static final int MAX_POOL_SIZE = 10;    private static final int QUEUE_CAPACITY = 100;    private static final Long KEEP_ALIVE_TIME = 1L;    public static void main(String[] args) {        //使用阿里巴巴推荐的创建线程池的方式        //通过ThreadPoolExecutor构造函数自定义参数创建        ThreadPoolExecutor executor = new ThreadPoolExecutor(                CORE_POOL_SIZE,                MAX_POOL_SIZE,                KEEP_ALIVE_TIME,                TimeUnit.SECONDS,                new ArrayBlockingQueue<>(QUEUE_CAPACITY),                new ThreadPoolExecutor.CallerRunsPolicy());        for (int i = 0; i < 10; i++) {            //创建WorkerThread对象（WorkerThread类实现了Runnable 接口）            Runnable worker = new MyRunnable("" + i);            //执行Runnable            executor.execute(worker);        }        //终止线程池        executor.shutdown();        while (!executor.isTerminated()) {        }        System.out.println("Finished all threads");    }}
 ```
 
 可以看到我们上面的代码指定了：
@@ -404,12 +362,7 @@ public class ThreadPoolExecutorDemo {
 这是两个Executors的两个方法，用于创建这两种线程池。
 
 ```java
-ExecutorService pool = Executors.newFixedThreadPool(40);  //创建固定线程数的线程池
-
-final static ExecutorService cachedThreadPool = Executors.newCachedThreadPool(); //创建根据需要创建线程的线程池
-
-//其实还有一种
-SingleThreadExecutor()  //这个是只有一个线程的线程池
+ExecutorService pool = Executors.newFixedThreadPool(40);  //创建固定线程数的线程池final static ExecutorService cachedThreadPool = Executors.newCachedThreadPool(); //创建根据需要创建线程的线程池//其实还有一种SingleThreadExecutor()  //这个是只有一个线程的线程池
 ```
 
 详细的常用线程的区别，看一下JavaGuide中java线程池并发总结。
@@ -425,25 +378,13 @@ SingleThreadExecutor()  //这个是只有一个线程的线程池
 `FixedThreadPool` 被称为可重用固定线程数的线程池。通过 Executors 类中的相关源代码来看一下相关实现：
 
 ```java
-   /**
-     * 创建一个可重用固定数量线程的线程池
-     */
-    public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
-        return new ThreadPoolExecutor(nThreads, nThreads,
-                                      0L, TimeUnit.MILLISECONDS,
-                                      new LinkedBlockingQueue<Runnable>(),
-                                      threadFactory);
-    }
+   /**     * 创建一个可重用固定数量线程的线程池     */    public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {        return new ThreadPoolExecutor(nThreads, nThreads,                                      0L, TimeUnit.MILLISECONDS,                                      new LinkedBlockingQueue<Runnable>(),                                      threadFactory);    }
 ```
 
 另外还有一个 `FixedThreadPool` 的实现方法，和上面的类似，所以这里不多做阐述：
 
 ```java
-    public static ExecutorService newFixedThreadPool(int nThreads) {
-        return new ThreadPoolExecutor(nThreads, nThreads,
-                                      0L, TimeUnit.MILLISECONDS,
-                                      new LinkedBlockingQueue<Runnable>());
-    }
+    public static ExecutorService newFixedThreadPool(int nThreads) {        return new ThreadPoolExecutor(nThreads, nThreads,                                      0L, TimeUnit.MILLISECONDS,                                      new LinkedBlockingQueue<Runnable>());    }
 ```
 
 **从上面源代码可以看出新创建的 `FixedThreadPool` 的 `corePoolSize` 和 `maximumPoolSize` 都被设置为 nThreads，这个 nThreads 参数是我们使用的时候自己传递的。**
@@ -476,25 +417,11 @@ SingleThreadExecutor()  //这个是只有一个线程的线程池
 `SingleThreadExecutor` 是只有一个线程的线程池。下面看看**SingleThreadExecutor 的实现：**
 
 ```java
-   /**
-     *返回只有一个线程的线程池
-     */
-    public static ExecutorService newSingleThreadExecutor(ThreadFactory threadFactory) {
-        return new FinalizableDelegatedExecutorService
-            (new ThreadPoolExecutor(1, 1,
-                                    0L, TimeUnit.MILLISECONDS,
-                                    new LinkedBlockingQueue<Runnable>(),
-                                    threadFactory));
-    }
+   /**     *返回只有一个线程的线程池     */    public static ExecutorService newSingleThreadExecutor(ThreadFactory threadFactory) {        return new FinalizableDelegatedExecutorService            (new ThreadPoolExecutor(1, 1,                                    0L, TimeUnit.MILLISECONDS,                                    new LinkedBlockingQueue<Runnable>(),                                    threadFactory));    }
 ```
 
 ```java
-   public static ExecutorService newSingleThreadExecutor() {
-        return new FinalizableDelegatedExecutorService
-            (new ThreadPoolExecutor(1, 1,
-                                    0L, TimeUnit.MILLISECONDS,
-                                    new LinkedBlockingQueue<Runnable>()));
-    }
+   public static ExecutorService newSingleThreadExecutor() {        return new FinalizableDelegatedExecutorService            (new ThreadPoolExecutor(1, 1,                                    0L, TimeUnit.MILLISECONDS,                                    new LinkedBlockingQueue<Runnable>()));    }
 ```
 
 从上面源代码可以看出新创建的 `SingleThreadExecutor` 的 `corePoolSize` 和 `maximumPoolSize` 都被设置为 1.其他参数和 `FixedThreadPool` 相同。
@@ -521,25 +448,11 @@ SingleThreadExecutor()  //这个是只有一个线程的线程池
 `CachedThreadPool` 是一个会根据需要创建新线程的线程池。下面通过源码来看看 `CachedThreadPool` 的实现：
 
 ```java
-    /**
-     * 创建一个线程池，根据需要创建新线程，但会在先前构建的线程可用时重用它。
-     */
-    public static ExecutorService newCachedThreadPool(ThreadFactory threadFactory) {
-        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                                      60L, TimeUnit.SECONDS,
-                                      new SynchronousQueue<Runnable>(),
-                                      threadFactory);
-    }
-
+    /**     * 创建一个线程池，根据需要创建新线程，但会在先前构建的线程可用时重用它。     */    public static ExecutorService newCachedThreadPool(ThreadFactory threadFactory) {        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,                                      60L, TimeUnit.SECONDS,                                      new SynchronousQueue<Runnable>(),                                      threadFactory);    }
 ```
 
 ```java
-    public static ExecutorService newCachedThreadPool() {
-        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                                      60L, TimeUnit.SECONDS,
-                                      new SynchronousQueue<Runnable>());
-    }
-
+    public static ExecutorService newCachedThreadPool() {        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,                                      60L, TimeUnit.SECONDS,                                      new SynchronousQueue<Runnable>());    }
 ```
 
 `CachedThreadPool` 的`corePoolSize` 被设置为空（0），`maximumPoolSize`被设置为 Integer.MAX.VALUE，即它是无界的，这也就意味着如果主线程提交任务的速度高于 `maximumPool` 中线程处理任务的速度时，`CachedThreadPool` 会不断创建新的线程。极端情况下，这样会导致耗尽 cpu 和内存资源。
@@ -614,30 +527,13 @@ SingleThreadExecutor()  //这个是只有一个线程的线程池
 `Runnable.java`
 
 ```java
-@FunctionalInterface
-public interface Runnable {
-   /**
-    * 被线程执行，没有返回值也无法抛出异常
-    */
-    public abstract void run();
-}
-
+@FunctionalInterfacepublic interface Runnable {   /**    * 被线程执行，没有返回值也无法抛出异常    */    public abstract void run();}
 ```
 
 `Callable.java`
 
 ```java
-@FunctionalInterface
-public interface Callable<V> {
-    /**
-     * 计算结果，或在无法这样做时抛出异常。
-     * @return 计算得出的结果
-     * @throws 如果无法计算结果，则抛出异常
-     */
-    V call() throws Exception;
-}
-
-
+@FunctionalInterfacepublic interface Callable<V> {    /**     * 计算结果，或在无法这样做时抛出异常。     * @return 计算得出的结果     * @throws 如果无法计算结果，则抛出异常     */    V call() throws Exception;}
 ```
 
 #### 2 `execute()` vs `submit()`
@@ -648,31 +544,19 @@ public interface Callable<V> {
 我们以**`AbstractExecutorService`**接口中的一个 `submit` 方法为例子来看看源代码：
 
 ```java
-    public Future<?> submit(Runnable task) {
-        if (task == null) throw new NullPointerException();
-        RunnableFuture<Void> ftask = newTaskFor(task, null);
-        execute(ftask);
-        return ftask;
-    }
-
+    public Future<?> submit(Runnable task) {        if (task == null) throw new NullPointerException();        RunnableFuture<Void> ftask = newTaskFor(task, null);        execute(ftask);        return ftask;    }
 ```
 
 上面方法调用的 `newTaskFor` 方法返回了一个 `FutureTask` 对象。
 
 ```java
-    protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
-        return new FutureTask<T>(runnable, value);
-    }
-
+    protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {        return new FutureTask<T>(runnable, value);    }
 ```
 
 我们再来看看`execute()`方法：
 
 ```java
-    public void execute(Runnable command) {
-      ...
-    }
-
+    public void execute(Runnable command) {      ...    }
 ```
 
 #### 3 `shutdown()`VS`shutdownNow()`
@@ -688,70 +572,13 @@ public interface Callable<V> {
 #### 5.run( ) VS  start（）
 
 ```java
-public class CallableDemo1 {
-    public static void main(String[] args) {
-        //创建方式有点和前两种都不一样
-        MyCallable callable1 = new MyCallable();
-        MyCallable callable2 = new MyCallable();
-        MyCallable callable3 = new MyCallable();
-        FutureTask<String> task1 = new FutureTask<String>(callable1);
-        FutureTask<String> task2 = new FutureTask<String>(callable1);
-        FutureTask<String> task3 = new FutureTask<String>(callable1);
-        new Thread(task1,"窗口1：").run();
-        new Thread(task2,"窗口2：").run();
-        new Thread(task3,"窗口3：").run();
-        
-        try {
-            System.out.println("窗口1返回的结果为：" + task1.get());
-            System.out.println("窗口2返回的结果为：" + task2.get());
-            System.out.println("窗口3返回的结果为：" + task3.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
+public class CallableDemo1 {    public static void main(String[] args) {        //创建方式有点和前两种都不一样        MyCallable callable1 = new MyCallable();        MyCallable callable2 = new MyCallable();        MyCallable callable3 = new MyCallable();        FutureTask<String> task1 = new FutureTask<String>(callable1);        FutureTask<String> task2 = new FutureTask<String>(callable1);        FutureTask<String> task3 = new FutureTask<String>(callable1);        new Thread(task1,"窗口1：").run();        new Thread(task2,"窗口2：").run();        new Thread(task3,"窗口3：").run();                try {            System.out.println("窗口1返回的结果为：" + task1.get());            System.out.println("窗口2返回的结果为：" + task2.get());            System.out.println("窗口3返回的结果为：" + task3.get());        } catch (InterruptedException e) {            e.printStackTrace();        } catch (ExecutionException e) {            e.printStackTrace();        }    }}
 ```
 
 看上面线程创建的第三种方式，如果把.start(),修改为.run(),结果会怎么呢？
 
 ```java
-main:正在卖票，剩下票数：29
-main:正在卖票，剩下票数：28
-main:正在卖票，剩下票数：27
-main:正在卖票，剩下票数：26
-main:正在卖票，剩下票数：25
-main:正在卖票，剩下票数：24
-main:正在卖票，剩下票数：23
-main:正在卖票，剩下票数：22
-main:正在卖票，剩下票数：21
-main:正在卖票，剩下票数：20
-main:正在卖票，剩下票数：19
-main:正在卖票，剩下票数：18
-main:正在卖票，剩下票数：17
-main:正在卖票，剩下票数：16
-main:正在卖票，剩下票数：15
-main:正在卖票，剩下票数：14
-main:正在卖票，剩下票数：13
-main:正在卖票，剩下票数：12
-main:正在卖票，剩下票数：11
-main:正在卖票，剩下票数：10
-main:正在卖票，剩下票数：9
-main:正在卖票，剩下票数：8
-main:正在卖票，剩下票数：7
-main:正在卖票，剩下票数：6
-main:正在卖票，剩下票数：5
-main:正在卖票，剩下票数：4
-main:正在卖票，剩下票数：3
-main:正在卖票，剩下票数：2
-main:正在卖票，剩下票数：1
-main:正在卖票，剩下票数：0
-窗口1返回的结果为：票卖完了
-窗口2返回的结果为：票卖完了
-窗口3返回的结果为：票卖完了
-
+main:正在卖票，剩下票数：29main:正在卖票，剩下票数：28main:正在卖票，剩下票数：27main:正在卖票，剩下票数：26main:正在卖票，剩下票数：25main:正在卖票，剩下票数：24main:正在卖票，剩下票数：23main:正在卖票，剩下票数：22main:正在卖票，剩下票数：21main:正在卖票，剩下票数：20main:正在卖票，剩下票数：19main:正在卖票，剩下票数：18main:正在卖票，剩下票数：17main:正在卖票，剩下票数：16main:正在卖票，剩下票数：15main:正在卖票，剩下票数：14main:正在卖票，剩下票数：13main:正在卖票，剩下票数：12main:正在卖票，剩下票数：11main:正在卖票，剩下票数：10main:正在卖票，剩下票数：9main:正在卖票，剩下票数：8main:正在卖票，剩下票数：7main:正在卖票，剩下票数：6main:正在卖票，剩下票数：5main:正在卖票，剩下票数：4main:正在卖票，剩下票数：3main:正在卖票，剩下票数：2main:正在卖票，剩下票数：1main:正在卖票，剩下票数：0窗口1返回的结果为：票卖完了窗口2返回的结果为：票卖完了窗口3返回的结果为：票卖完了
 ```
 
 就是说，调用start（）方法，其实执行的是异步操作，三个线程进行售票。
@@ -774,71 +601,13 @@ main:正在卖票，剩下票数：0
 **join()** （这个也叫自闭状态）方法会使当前线程等待调用join()方法的线程结束后才能继续执行，例如：
 
 ```java
-public class TestJoin {
-
-    public static void main(String[] args) {
-        Thread thread = new Thread(new JoinDemo());
-        thread.start();
-
-        for (int i = 0; i < 20; i++) {
-            System.out.println("主线程第" + i + "次执行！");
-            if (i >= 2)
-                try {
-                   // t1线程合并到主线程中，主线程停止执行过程，转而执行t1线程，直到t1执行完毕后继续。
-                    thread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-        }
-    }
-}
-
-class JoinDemo implements Runnable {
-
-    @Override
-    public void run() {
-        for (int i = 0; i < 10; i++) {
-            System.out.println("线程1第" + i + "次执行！");
-        }
-    }
-}
-
+public class TestJoin {    public static void main(String[] args) {        Thread thread = new Thread(new JoinDemo());        thread.start();        for (int i = 0; i < 20; i++) {            System.out.println("主线程第" + i + "次执行！");            if (i >= 2)                try {                   // t1线程合并到主线程中，主线程停止执行过程，转而执行t1线程，直到t1执行完毕后继续。                    thread.join();                } catch (InterruptedException e) {                    e.printStackTrace();                }        }    }}class JoinDemo implements Runnable {    @Override    public void run() {        for (int i = 0; i < 10; i++) {            System.out.println("线程1第" + i + "次执行！");        }    }}
 ```
 
 运行结果：
 
 ```java
-主线程第0次执行！
-主线程第1次执行！
-主线程第2次执行！
-线程1第0次执行！
-线程1第1次执行！
-线程1第2次执行！
-线程1第3次执行！
-线程1第4次执行！
-线程1第5次执行！
-线程1第6次执行！
-线程1第7次执行！
-线程1第8次执行！
-线程1第9次执行！
-主线程第3次执行！
-主线程第4次执行！
-主线程第5次执行！
-主线程第6次执行！
-主线程第7次执行！
-主线程第8次执行！
-主线程第9次执行！
-主线程第10次执行！
-主线程第11次执行！
-主线程第12次执行！
-主线程第13次执行！
-主线程第14次执行！
-主线程第15次执行！
-主线程第16次执行！
-主线程第17次执行！
-主线程第18次执行！
-主线程第19次执行！
-
+主线程第0次执行！主线程第1次执行！主线程第2次执行！线程1第0次执行！线程1第1次执行！线程1第2次执行！线程1第3次执行！线程1第4次执行！线程1第5次执行！线程1第6次执行！线程1第7次执行！线程1第8次执行！线程1第9次执行！主线程第3次执行！主线程第4次执行！主线程第5次执行！主线程第6次执行！主线程第7次执行！主线程第8次执行！主线程第9次执行！主线程第10次执行！主线程第11次执行！主线程第12次执行！主线程第13次执行！主线程第14次执行！主线程第15次执行！主线程第16次执行！主线程第17次执行！主线程第18次执行！主线程第19次执行！
 ```
 
 
@@ -859,9 +628,7 @@ class JoinDemo implements Runnable {
 #### 0个
 
 ```java
-ExecutorService executorService = new ThreadPoolExecutor(2, 5, 0, TimeUnit.DAYS,
-                new ArrayBlockingQueue<>(1), new ThreadFactory() {
-
+ExecutorService executorService = new ThreadPoolExecutor(2, 5, 0, TimeUnit.DAYS,                new ArrayBlockingQueue<>(1), new ThreadFactory() {
 ```
 
 就是上面这句话写了以后，其实是没有创建线程的。
@@ -1044,14 +811,7 @@ JDK1.6 对锁的实现引入了大量的优化，如偏向锁、轻量级锁、�
 比如代码：
 
 ```java
-public String concatString(String s1,String s2,String s3){
-    StringBuffer sb = new StringBuffer();
-    sb.append(s1);
-    sb.append(s2);
-    sb.append(s3);
-    return sb.toString();
-}
-
+public String concatString(String s1,String s2,String s3){    StringBuffer sb = new StringBuffer();    sb.append(s1);    sb.append(s2);    sb.append(s3);    return sb.toString();}
 ```
 
 如果虚拟机探测到这样一串操作都是对一个对象加锁，那么将会把锁同步的范围扩展（粗化）到整个操作系统序列化的外部，会将锁扩展到第一个append（）之前，或者最后一个append（）之后，这样值只需要加一次锁即可。
@@ -1075,16 +835,7 @@ public String concatString(String s1,String s2,String s3){
 常用的保证Java操作原子性的工具是锁和同步方法（或者同步代码块）。使用锁，可以保证同一时间只有一个线程能拿到锁，也就保证了同一时间只有一个线程能执行申请锁和释放锁之间的代码。
 
 ```java
-public void testLock () {
-  lock.lock();
-  try{
-    int j = i;
-    i = j + 1;
-  } finally {
-    lock.unlock();
-  }
-}
-
+public void testLock () {  lock.lock();  try{    int j = i;    i = j + 1;  } finally {    lock.unlock();  }}
 ```
 
 
@@ -1092,13 +843,7 @@ public void testLock () {
 与锁类似的是同步方法或者同步代码块。使用非静态同步方法时，锁住的是当前实例；使用静态同步方法时，锁住的是该类的Class对象；使用静态代码块时，锁住的是`synchronized`关键字后面括号内的对象。下面是同步代码块示例
 
 ```java
-public void testLock () {
-  synchronized (anyObject){
-    int j = i;
-    i = j + 1;
-  }
-}
-
+public void testLock () {  synchronized (anyObject){    int j = i;    i = j + 1;  }}
 ```
 
 
@@ -1110,15 +855,7 @@ public void testLock () {
 基础类型变量自增（i++）是一种常被新手误以为是原子操作而实际不是的操作。Java中提供了对应的原子操作类来实现该操作，并保证原子性，其本质是利用了CPU级别的CAS指令。由于是CPU级别的指令，其开销比需要操作系统参与的锁的开销小。AtomicInteger使用方法如下。
 
 ```java
-AtomicInteger atomicInteger = new AtomicInteger();
-for(int b = 0; b < numThreads; b++) {
-  new Thread(() -> {
-    for(int a = 0; a < iteration; a++) {
-      atomicInteger.incrementAndGet();
-    }
-  }).start();
-}
-
+AtomicInteger atomicInteger = new AtomicInteger();for(int b = 0; b < numThreads; b++) {  new Thread(() -> {    for(int a = 0; a < iteration; a++) {      atomicInteger.incrementAndGet();    }  }).start();}
 ```
 
 #### Java如何保证线程可见性
@@ -1172,34 +909,7 @@ synchronized和锁保证顺序性的原理和保证原子性一样，都是通�
 1000个线程，每个线程对共享变量 count 进行 1000 次 ++ 操作。
 
 ```java
-public class ThreadSafeTest {
-	static int count = 0;
-	static CountDownLatch cd1 = new CountDownLatch(1000);
-
-	public static void main(String[] args) throws InterruptedException {
-		CountRunnable countRunnable = new CountRunnable();
-		for (int i = 0; i < 1000; i++) {
-			new Thread(countRunnable).start();
-		}
-		cd1.await();
-		System.out.println(count);
-	}
-
-	static class CountRunnable implements Runnable {
-		private void count() {
-			for (int i = 0; i < 1000; i++) {
-				count++;
-			}
-		}
-
-		@Override
-		public void run() {
-			count();
-			cd1.countDown();
-		}
-	}
-}
-
+public class ThreadSafeTest {	static int count = 0;	static CountDownLatch cd1 = new CountDownLatch(1000);	public static void main(String[] args) throws InterruptedException {		CountRunnable countRunnable = new CountRunnable();		for (int i = 0; i < 1000; i++) {			new Thread(countRunnable).start();		}		cd1.await();		System.out.println(count);	}	static class CountRunnable implements Runnable {		private void count() {			for (int i = 0; i < 1000; i++) {				count++;			}		}		@Override		public void run() {			count();			cd1.countDown();		}	}}
 ```
 
 上面的例子我们期望的结果应该是 1000000，但运行 N 遍，你会发现总是不为 1000000，至少你现在知道了 i++
@@ -1227,48 +937,14 @@ public class ThreadSafeTest {
   1、对 i++ 操作的方法加同步锁，同时只能有一个线程执行 i++ 操作；
 
   ```java
-  private synchronized void count() {  //synchronized 关键字既可以保证可见性，也可以保证原子性
-      for (int i = 0; i < 1000; i++) {
-          count++;
-      }
-  }
-  
+  private synchronized void count() {  //synchronized 关键字既可以保证可见性，也可以保证原子性    for (int i = 0; i < 1000; i++) {        count++;    }}
   ```
 
   2、使用支持原子性操作的类，如 **java.util.concurrent.atomic.AtomicInteger**，它使用的是
   CAS 算法，效率优于第 1 种;
 
   ```java
-  public class ThreadSafeTest {
-  	//static int count = 0;
-  	static AtomicInteger count = new AtomicInteger();
-  	static CountDownLatch cd1 = new CountDownLatch(1000);
-  
-  	public static void main(String[] args) throws InterruptedException {
-  		CountRunnable countRunnable = new CountRunnable();
-  		for (int i = 0; i < 1000; i++) {
-  			new Thread(countRunnable).start();
-  		}
-  		cd1.await();
-  		System.out.println(count);
-  	}
-  
-  	static class CountRunnable implements Runnable {
-  		private void count() {
-  			for (int i = 0; i < 1000; i++) {
-  				//count++;
-  				count.getAndIncrement();
-  			}
-  		}
-  
-  		@Override
-  		public void run() {
-  			count();
-  			cd1.countDown();
-  		}
-  	}
-  }
-  
+  public class ThreadSafeTest {	//static int count = 0;	static AtomicInteger count = new AtomicInteger();	static CountDownLatch cd1 = new CountDownLatch(1000);	public static void main(String[] args) throws InterruptedException {		CountRunnable countRunnable = new CountRunnable();		for (int i = 0; i < 1000; i++) {			new Thread(countRunnable).start();		}		cd1.await();		System.out.println(count);	}	static class CountRunnable implements Runnable {		private void count() {			for (int i = 0; i < 1000; i++) {				//count++;				count.getAndIncrement();			}		}		@Override		public void run() {			count();			cd1.countDown();		}	}}
   ```
 
 
@@ -1298,9 +974,7 @@ public class ThreadSafeTest {
 
 
 ```cpp
-//参数count为计数值
-public CountDownLatch(int count) {  };  
-
+//参数count为计数值public CountDownLatch(int count) {  };  
 ```
 
 - 类中有三个方法是最重要的：
@@ -1308,13 +982,7 @@ public CountDownLatch(int count) {  };
 
 
 ```java
-//调用await()方法的线程会被挂起，它会等待直到count值为0才继续执行
-public void await() throws InterruptedException { };   
-//和await()类似，只不过等待一定的时间后count值还没变为0的话就会继续执行
-public boolean await(long timeout, TimeUnit unit) throws InterruptedException { };  
-//将count值减1
-public void countDown() { };  
-
+//调用await()方法的线程会被挂起，它会等待直到count值为0才继续执行public void await() throws InterruptedException { };   //和await()类似，只不过等待一定的时间后count值还没变为0的话就会继续执行public boolean await(long timeout, TimeUnit unit) throws InterruptedException { };  //将count值减1public void countDown() { };  
 ```
 
 #### 4.示例
@@ -1324,100 +992,19 @@ public void countDown() { };
 
 
 ```csharp
-public class CountDownLatchTest {
-
-    public static void main(String[] args) {
-        final CountDownLatch latch = new CountDownLatch(2);
-        System.out.println("主线程开始执行…… ……");
-        //第一个子线程执行
-        ExecutorService es1 = Executors.newSingleThreadExecutor();
-        es1.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(3000);
-                    System.out.println("子线程："+Thread.currentThread().getName()+"执行");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                latch.countDown();
-            }
-        });
-        es1.shutdown();
-
-        //第二个子线程执行
-        ExecutorService es2 = Executors.newSingleThreadExecutor();
-        es2.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("子线程："+Thread.currentThread().getName()+"执行");
-                latch.countDown();
-            }
-        });
-        es2.shutdown();
-        System.out.println("等待两个线程执行完毕…… ……");
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("两个子线程都执行完毕，继续执行主线程");
-    }
-}
-
+public class CountDownLatchTest {    public static void main(String[] args) {        final CountDownLatch latch = new CountDownLatch(2);        System.out.println("主线程开始执行…… ……");        //第一个子线程执行        ExecutorService es1 = Executors.newSingleThreadExecutor();        es1.execute(new Runnable() {            @Override            public void run() {                try {                    Thread.sleep(3000);                    System.out.println("子线程："+Thread.currentThread().getName()+"执行");                } catch (InterruptedException e) {                    e.printStackTrace();                }                latch.countDown();            }        });        es1.shutdown();        //第二个子线程执行        ExecutorService es2 = Executors.newSingleThreadExecutor();        es2.execute(new Runnable() {            @Override            public void run() {                try {                    Thread.sleep(3000);                } catch (InterruptedException e) {                    e.printStackTrace();                }                System.out.println("子线程："+Thread.currentThread().getName()+"执行");                latch.countDown();            }        });        es2.shutdown();        System.out.println("等待两个线程执行完毕…… ……");        try {            latch.await();        } catch (InterruptedException e) {            e.printStackTrace();        }        System.out.println("两个子线程都执行完毕，继续执行主线程");    }}
 ```
 
 结果集：
 
 ```undefined
-主线程开始执行…… ……
-等待两个线程执行完毕…… ……
-子线程：pool-1-thread-1执行
-子线程：pool-2-thread-1执行
-两个子线程都执行完毕，继续执行主线程
-
+主线程开始执行…… ……等待两个线程执行完毕…… ……子线程：pool-1-thread-1执行子线程：pool-2-thread-1执行两个子线程都执行完毕，继续执行主线程
 ```
 
 *模拟并发示例：*
 
 ```csharp
-public class Parallellimit {
-    public static void main(String[] args) {
-        ExecutorService pool = Executors.newCachedThreadPool();
-        CountDownLatch cdl = new CountDownLatch(100);
-        for (int i = 0; i < 100; i++) {
-            CountRunnable runnable = new CountRunnable(cdl);
-            pool.execute(runnable);
-        }
-    }
-}
-
- class CountRunnable implements Runnable {
-    private CountDownLatch countDownLatch;
-    public CountRunnable(CountDownLatch countDownLatch) {
-        this.countDownLatch = countDownLatch;
-    }
-    @Override
-    public void run() {
-        try {
-            synchronized (countDownLatch) {
-                /*** 每次减少一个容量*/
-                countDownLatch.countDown();
-                System.out.println("thread counts = " + (countDownLatch.getCount()));
-            }
-            countDownLatch.await();
-            System.out.println("concurrency counts = " + (100 - countDownLatch.getCount()));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
+public class Parallellimit {    public static void main(String[] args) {        ExecutorService pool = Executors.newCachedThreadPool();        CountDownLatch cdl = new CountDownLatch(100);        for (int i = 0; i < 100; i++) {            CountRunnable runnable = new CountRunnable(cdl);            pool.execute(runnable);        }    }} class CountRunnable implements Runnable {    private CountDownLatch countDownLatch;    public CountRunnable(CountDownLatch countDownLatch) {        this.countDownLatch = countDownLatch;    }    @Override    public void run() {        try {            synchronized (countDownLatch) {                /*** 每次减少一个容量*/                countDownLatch.countDown();                System.out.println("thread counts = " + (countDownLatch.getCount()));            }            countDownLatch.await();            System.out.println("concurrency counts = " + (100 - countDownLatch.getCount()));        } catch (InterruptedException e) {            e.printStackTrace();        }    }}
 ```
 
 > ***CountDownLatch和CyclicBarrier区别：**
@@ -1501,46 +1088,13 @@ N代表CPU的核数。
 （现在很多项目线程池滥用，注意分配线程数量，建议不要动态创建线程池，尽量将线程池配置在配置文件中，这样方便以后整体的把控和后期维护。每个核心业务线程池要互相独立，互不影响。）
 
 ```XML
-spring:
-<bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
-      id="userPrivacyDataObtainThreadPool">
-    <!-- 核心线程数 -->
-    <property value="6" name="corePoolSize"/>
-    <!-- 最大线程数 -->
-    <property value="10" name="maxPoolSize"/>
-    <!-- 队列最大长度 >=mainExecutor.maxSize -->
-    <property value="200" name="queueCapacity"/>
-    <!-- 线程池维护线程所允许的空闲时间 -->
-    <property value="300" name="keepAliveSeconds"/>
-    <!-- 线程池对拒绝任务(无线程可用)的处理策略 -->
-    <property name="rejectedExecutionHandler">
-        <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy"/>
-    </property>
-</bean>
-
+spring:<bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"      id="userPrivacyDataObtainThreadPool">    <!-- 核心线程数 -->    <property value="6" name="corePoolSize"/>    <!-- 最大线程数 -->    <property value="10" name="maxPoolSize"/>    <!-- 队列最大长度 >=mainExecutor.maxSize -->    <property value="200" name="queueCapacity"/>    <!-- 线程池维护线程所允许的空闲时间 -->    <property value="300" name="keepAliveSeconds"/>    <!-- 线程池对拒绝任务(无线程可用)的处理策略 -->    <property name="rejectedExecutionHandler">        <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy"/>    </property></bean>
 ```
 
 项目中定时任务：
 
 ```xml
-<!--项目内定时任务 -->
-<bean id="scheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
-    <!-- 设置线程池容量，也是最大并发线程数 -->
-    <property name="poolSize" value="2" />
-    <!-- 当任务被取消的同时从当前调度器移除 -->
-    <property name="removeOnCancelPolicy" value="true" />
-    <!--  线程名前缀 -->
-    <property name="threadNamePrefix" value="cashpay-scheduler-" />
-    <!--  设置线程池中任务的等待时间，如果超过这个时候还没有销毁就强制销毁 -->
-    <property name="awaitTerminationSeconds" value="60" />
-    <!-- 当调度器shutdown被调用时等待当前被调度的任务完成 -->
-    <property name="waitForTasksToCompleteOnShutdown" value="true" />
-    <!-- 线程池对拒绝任务(无线程可用)的处理策略 -->
-    <property name="rejectedExecutionHandler">
-        <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy"/>
-    </property>
-</bean>
-
+<!--项目内定时任务 --><bean id="scheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">    <!-- 设置线程池容量，也是最大并发线程数 -->    <property name="poolSize" value="2" />    <!-- 当任务被取消的同时从当前调度器移除 -->    <property name="removeOnCancelPolicy" value="true" />    <!--  线程名前缀 -->    <property name="threadNamePrefix" value="cashpay-scheduler-" />    <!--  设置线程池中任务的等待时间，如果超过这个时候还没有销毁就强制销毁 -->    <property name="awaitTerminationSeconds" value="60" />    <!-- 当调度器shutdown被调用时等待当前被调度的任务完成 -->    <property name="waitForTasksToCompleteOnShutdown" value="true" />    <!-- 线程池对拒绝任务(无线程可用)的处理策略 -->    <property name="rejectedExecutionHandler">        <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy"/>    </property></bean>
 ```
 
 参考：https://blog.csdn.net/wangpeng322/article/details/80737583?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1
@@ -1566,14 +1120,7 @@ spring:
 SimpleDateFormat这个类时线程不安全的类，
 
 ```java
-private static final ThreadLocal<DateFormat> df = new ThreadLocal<DateFormat>(){
-    @Override
-    protected SimpleDateFormat initialValue()
-    {
-        return new SimpleDateFormat("yyyyMMdd HHmm");
-    }
-};
-
+private static final ThreadLocal<DateFormat> df = new ThreadLocal<DateFormat>(){    @Override    protected SimpleDateFormat initialValue()    {        return new SimpleDateFormat("yyyyMMdd HHmm");    }};
 ```
 
 如果每个线程需要的时间格式不一样，又相互不影响，那怎么搞？就用上面这个呀
@@ -1585,66 +1132,13 @@ private static final ThreadLocal<DateFormat> df = new ThreadLocal<DateFormat>(){
 相信看了上面的解释，大家已经搞懂 ThreadLocal 类是个什么东西了。
 
 ```java
-import java.text.SimpleDateFormat;
-import java.util.Random;
-
-public class ThreadLocalExample implements Runnable{
-
-     // SimpleDateFormat 不是线程安全的，所以每个线程都要有自己独立的副本
-    private static final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMdd HHmm"));
-
-    public static void main(String[] args) throws InterruptedException {
-        ThreadLocalExample obj = new ThreadLocalExample();
-        for(int i=0 ; i<10; i++){
-            Thread t = new Thread(obj, ""+i);
-            Thread.sleep(new Random().nextInt(1000));
-            t.start();
-        }
-    }
-
-    @Override
-    public void run() {
-        System.out.println("Thread Name= "+Thread.currentThread().getName()+" default Formatter = "+formatter.get().toPattern());
-        try {
-            Thread.sleep(new Random().nextInt(1000));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //formatter pattern is changed here by thread, but it won't reflect to other threads
-        formatter.set(new SimpleDateFormat());
-
-        System.out.println("Thread Name= "+Thread.currentThread().getName()+" formatter = "+formatter.get().toPattern());
-    }
-
-}
-
-
+import java.text.SimpleDateFormat;import java.util.Random;public class ThreadLocalExample implements Runnable{     // SimpleDateFormat 不是线程安全的，所以每个线程都要有自己独立的副本    private static final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMdd HHmm"));    public static void main(String[] args) throws InterruptedException {        ThreadLocalExample obj = new ThreadLocalExample();        for(int i=0 ; i<10; i++){            Thread t = new Thread(obj, ""+i);            Thread.sleep(new Random().nextInt(1000));            t.start();        }    }    @Override    public void run() {        System.out.println("Thread Name= "+Thread.currentThread().getName()+" default Formatter = "+formatter.get().toPattern());        try {            Thread.sleep(new Random().nextInt(1000));        } catch (InterruptedException e) {            e.printStackTrace();        }        //formatter pattern is changed here by thread, but it won't reflect to other threads        formatter.set(new SimpleDateFormat());        System.out.println("Thread Name= "+Thread.currentThread().getName()+" formatter = "+formatter.get().toPattern());    }}
 ```
 
 Output:
 
 ```
-Thread Name= 0 default Formatter = yyyyMMdd HHmm
-Thread Name= 0 formatter = yy-M-d ah:mm
-Thread Name= 1 default Formatter = yyyyMMdd HHmm
-Thread Name= 2 default Formatter = yyyyMMdd HHmm
-Thread Name= 1 formatter = yy-M-d ah:mm
-Thread Name= 3 default Formatter = yyyyMMdd HHmm
-Thread Name= 2 formatter = yy-M-d ah:mm
-Thread Name= 4 default Formatter = yyyyMMdd HHmm
-Thread Name= 3 formatter = yy-M-d ah:mm
-Thread Name= 4 formatter = yy-M-d ah:mm
-Thread Name= 5 default Formatter = yyyyMMdd HHmm
-Thread Name= 5 formatter = yy-M-d ah:mm
-Thread Name= 6 default Formatter = yyyyMMdd HHmm
-Thread Name= 6 formatter = yy-M-d ah:mm
-Thread Name= 7 default Formatter = yyyyMMdd HHmm
-Thread Name= 7 formatter = yy-M-d ah:mm
-Thread Name= 8 default Formatter = yyyyMMdd HHmm
-Thread Name= 9 default Formatter = yyyyMMdd HHmm
-Thread Name= 8 formatter = yy-M-d ah:mm
-Thread Name= 9 formatter = yy-M-d ah:mm
-
+Thread Name= 0 default Formatter = yyyyMMdd HHmmThread Name= 0 formatter = yy-M-d ah:mmThread Name= 1 default Formatter = yyyyMMdd HHmmThread Name= 2 default Formatter = yyyyMMdd HHmmThread Name= 1 formatter = yy-M-d ah:mmThread Name= 3 default Formatter = yyyyMMdd HHmmThread Name= 2 formatter = yy-M-d ah:mmThread Name= 4 default Formatter = yyyyMMdd HHmmThread Name= 3 formatter = yy-M-d ah:mmThread Name= 4 formatter = yy-M-d ah:mmThread Name= 5 default Formatter = yyyyMMdd HHmmThread Name= 5 formatter = yy-M-d ah:mmThread Name= 6 default Formatter = yyyyMMdd HHmmThread Name= 6 formatter = yy-M-d ah:mmThread Name= 7 default Formatter = yyyyMMdd HHmmThread Name= 7 formatter = yy-M-d ah:mmThread Name= 8 default Formatter = yyyyMMdd HHmmThread Name= 9 default Formatter = yyyyMMdd HHmmThread Name= 8 formatter = yy-M-d ah:mmThread Name= 9 formatter = yy-M-d ah:mm
 ```
 
 从输出中可以看出，Thread-0已经改变了formatter的值，但仍然是thread-2默认格式化程序与初始化值相同，其他线程也一样。
@@ -1664,16 +1158,7 @@ Thread Name= 9 formatter = yy-M-d ah:mm
 从 `Thread`类源代码入手。
 
 ```java
-public class Thread implements Runnable {
- ......
-//与此线程有关的ThreadLocal值。由ThreadLocal类维护
-ThreadLocal.ThreadLocalMap threadLocals = null;
-
-//与此线程有关的InheritableThreadLocal值。由InheritableThreadLocal类维护
-ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
- ......
-}
-
+public class Thread implements Runnable { ......//与此线程有关的ThreadLocal值。由ThreadLocal类维护ThreadLocal.ThreadLocalMap threadLocals = null;//与此线程有关的InheritableThreadLocal值。由InheritableThreadLocal类维护ThreadLocal.ThreadLocalMap inheritableThreadLocals = null; ......}
 ```
 
 从上面`Thread`类 源代码可以看出`Thread` 类中有一个 `threadLocals` 和 一个  `inheritableThreadLocals` 变量，它们都是 `ThreadLocalMap`  类型的变量,我们可以把 `ThreadLocalMap`  理解为`ThreadLocal` 类实现的定制化的 `HashMap`。默认情况下这两个变量都是null，只有当前线程调用 `ThreadLocal` 类的 `set`或`get`方法时才创建它们，实际上调用这两个方法的时候，我们调用的是`ThreadLocalMap`类对应的 `get()`、`set() `方法。
@@ -1681,18 +1166,7 @@ ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 `ThreadLocal`类的`set()`方法
 
 ```java
-    public void set(T value) {
-        Thread t = Thread.currentThread();
-        ThreadLocalMap map = getMap(t);
-        if (map != null)
-            map.set(this, value);
-        else
-            createMap(t, value);
-    }
-    ThreadLocalMap getMap(Thread t) {
-        return t.threadLocals;
-    }
-
+    public void set(T value) {        Thread t = Thread.currentThread();        ThreadLocalMap map = getMap(t);        if (map != null)            map.set(this, value);        else            createMap(t, value);    }    ThreadLocalMap getMap(Thread t) {        return t.threadLocals;    }
 ```
 
 通过上面这些内容，我们足以通过猜测得出结论：**最终的变量是放在了当前线程的 `ThreadLocalMap` 中，并不是存在 `ThreadLocal` 上，ThreadLocal 可以理解为只是ThreadLocalMap的封装，传递了变量值。**
@@ -1700,16 +1174,7 @@ ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 **每个Thread中都具备一个ThreadLocalMap，而ThreadLocalMap可以存储以ThreadLocal为key的键值对。** 比如我们在同一个线程中声明了两个 `ThreadLocal` 对象的话，会使用 `Thread`内部都是使用仅有那个`ThreadLocalMap` 存放数据的，`ThreadLocalMap`的 key 就是 `ThreadLocal`对象，value 就是 `ThreadLocal` 对象调用`set`方法设置的值。`ThreadLocal` 是 map结构是为了让每个线程可以关联多个 `ThreadLocal`变量。这也就解释了ThreadLocal声明的变量为什么在每一个线程都有自己的专属本地变量。
 
 ```java
-public class Thread implements Runnable {
- ......
-//与此线程有关的ThreadLocal值。由ThreadLocal类维护
-ThreadLocal.ThreadLocalMap threadLocals = null;
-
-//与此线程有关的InheritableThreadLocal值。由InheritableThreadLocal类维护
-ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
- ......
-}
-
+public class Thread implements Runnable { ......//与此线程有关的ThreadLocal值。由ThreadLocal类维护ThreadLocal.ThreadLocalMap threadLocals = null;//与此线程有关的InheritableThreadLocal值。由InheritableThreadLocal类维护ThreadLocal.ThreadLocalMap inheritableThreadLocals = null; ......}
 ```
 
 **ThreadLocalMap是ThreadLocal的静态内部类**。
@@ -1724,13 +1189,13 @@ ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 
 在 JDK1.2 之前，Java的内存模型实现总是从**主存**（即共享内存）读取变量，是不需要进行特别的注意的。而在当前的 Java 内存模型下，线程可以把变量保存**本地内存**（比如机器的寄存器）中，而不是直接在主存中进行读写。这就可能造成一个线程在主存中修改了一个变量的值，而另外一个线程还继续使用它在寄存器中的变量值的拷贝，造成**数据的不一致**。
 
-![数据不一致](https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/数据不一致.png)
+![数据不一致](../media/pictures/JUC.assets/%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4.png)
 
 要解决这个问题，就需要把变量声明为**volatile**，这就指示 JVM，这个变量是不稳定的，每次使用它都到主存中进行读取。
 
 说白了， **volatile** 关键字的主要作用就是保证变量的可见性然后还有一个作用是防止指令重排序。
 
-![volatile关键字的可见性](https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/volatile关键字的可见性.png)
+![volatile关键字的可见性](../media/pictures/JUC.assets/volatile%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7.png)
 
 #### 并发编程的三个重要特性
 
@@ -1754,20 +1219,7 @@ ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 个人理解的意思是，这个连接influxDB这个是公用的，所有线程都可以得到，对所有线程都是可见的。
 
 ```java
-volatile InfluxDB influxDB;
-
-InfluxDB getInstance() {
-    if (influxDB == null) {
-        synchronized (InfluxDB.class){
-            if(influxDB==null) {
-                influxDB = InfluxDBFactory.connect(host,username,password);
-            }
-        }
-    }
-
-    return influxDB;
-}
-
+volatile InfluxDB influxDB;InfluxDB getInstance() {    if (influxDB == null) {        synchronized (InfluxDB.class){            if(influxDB==null) {                influxDB = InfluxDBFactory.connect(host,username,password);            }        }    }    return influxDB;}
 ```
 
 2）作为状态标志：
@@ -1775,18 +1227,7 @@ InfluxDB getInstance() {
 也许实现 volatile 变量的规范使用仅仅是使用一个布尔状态标志，用于指示发生了一个重要的一次性事件，例如完成初始化或请求停机。
 
 ```java
-volatile boolean shutdownRequested;
-...
-public void shutdown() { 
-    shutdownRequested = true; 
-}
-
-public void doWork() { 
-    while (!shutdownRequested) { 
-        // do stuff
-    }
-}
-
+volatile boolean shutdownRequested;...public void shutdown() {     shutdownRequested = true; }public void doWork() {     while (!shutdownRequested) {         // do stuff    }}
 ```
 
 线程1执行doWork()的过程中，可能有另外的线程2调用了shutdown，所以boolean变量必须是volatile。
@@ -1805,11 +1246,7 @@ public void doWork() {
 其实这里的Lock是个接口。
 
 ```java
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-Lock lock = new ReentrantLock();
-
+import java.util.concurrent.locks.Lock;import java.util.concurrent.locks.ReentrantLock;Lock lock = new ReentrantLock();
 ```
 
 #### 应该说是 synchronized和ReentrantLock 的区别：
@@ -1853,27 +1290,7 @@ synchronized 是依赖于 JVM 实现的，前面我们也讲到了 虚拟机团�
 **双重校验锁实现对象单例（线程安全）**
 
 ```java
-public class Singleton {
-
-    private volatile static Singleton uniqueInstance;
-
-    private Singleton() {
-    }
-
-    public static Singleton getUniqueInstance() {
-       //先判断对象是否已经实例过，没有实例化过才进入加锁代码
-        if (uniqueInstance == null) {
-            //类对象加锁
-            synchronized (Singleton.class) {
-                if (uniqueInstance == null) {
-                    uniqueInstance = new Singleton();
-                }
-            }
-        }
-        return uniqueInstance;
-    }
-}
-
+public class Singleton {    private volatile static Singleton uniqueInstance;    private Singleton() {    }    public static Singleton getUniqueInstance() {       //先判断对象是否已经实例过，没有实例化过才进入加锁代码        if (uniqueInstance == null) {            //类对象加锁            synchronized (Singleton.class) {                if (uniqueInstance == null) {                    uniqueInstance = new Singleton();                }            }        }        return uniqueInstance;    }}
 ```
 
 另外，需要注意 uniqueInstance 采用 volatile 关键字修饰也是很有必要。
@@ -1919,51 +1336,7 @@ uniqueInstance 采用 volatile 关键字修饰也是很有必要的， uniqueIns
 参考示例：
 
 ```java
-public class MyObject {
-
-    synchronized public void methodA() {
-        //do something....
-    }
-
-    synchronized public void methodB() {
-        //do some other thing
-    }
-}
-
-public class ThreadA extends Thread {
-
-    private MyObject object;
-//省略构造方法
-    @Override
-    public void run() {
-        super.run();
-        object.methodA();
-    }
-}
-
-public class ThreadB extends Thread {
-
-    private MyObject object;
-//省略构造方法
-    @Override
-    public void run() {
-        super.run();
-        object.methodB();
-    }
-}
-
-public class Run {
-    public static void main(String[] args) {
-        MyObject object = new MyObject();
-
-        //线程A与线程B 持有的是同一个对象:object
-        ThreadA a = new ThreadA(object);
-        ThreadB b = new ThreadB(object);
-        a.start();
-        b.start();
-    }
-}
-
+public class MyObject {    synchronized public void methodA() {        //do something....    }    synchronized public void methodB() {        //do some other thing    }}public class ThreadA extends Thread {    private MyObject object;//省略构造方法    @Override    public void run() {        super.run();        object.methodA();    }}public class ThreadB extends Thread {    private MyObject object;//省略构造方法    @Override    public void run() {        super.run();        object.methodB();    }}public class Run {    public static void main(String[] args) {        MyObject object = new MyObject();        //线程A与线程B 持有的是同一个对象:object        ThreadA a = new ThreadA(object);        ThreadB b = new ThreadB(object);        a.start();        b.start();    }}
 ```
 
 由于线程A和线程B持有同一个MyObject类的对象object，尽管这两个线程需要调用不同的方法，但是它们是同步执行的，比如：**线程B需要等待线程A执行完了methodA()方法之后，它才能执行methodB()方法。这样，线程A和线程B就实现了 通信。**
@@ -1977,90 +1350,7 @@ public class Run {
 代码如下：
 
 ```jaVA
- 1 import java.util.ArrayList;
- 2 import java.util.List;
- 3 
- 4 public class MyList {
- 5 
- 6     private List<String> list = new ArrayList<String>();
- 7     public void add() {
- 8         list.add("elements");
- 9     }
-10     public int size() {
-11         return list.size();
-12     }
-13 }
-14 
-15 import mylist.MyList;
-16 
-17 public class ThreadA extends Thread {
-18 
-19     private MyList list;
-20 
-21     public ThreadA(MyList list) {
-22         super();
-23         this.list = list;
-24     }
-25 
-26     @Override
-27     public void run() {
-28         try {
-29             for (int i = 0; i < 10; i++) {
-30                 list.add();
-31                 System.out.println("添加了" + (i + 1) + "个元素");
-32                 Thread.sleep(1000);
-33             }
-34         } catch (InterruptedException e) {
-35             e.printStackTrace();
-36         }
-37     }
-38 }
-39 
-40 import mylist.MyList;
-41 
-42 public class ThreadB extends Thread {
-43 
-44     private MyList list;
-45 
-46     public ThreadB(MyList list) {
-47         super();
-48         this.list = list;
-49     }
-50 
-51     @Override
-52     public void run() {
-53         try {
-54             while (true) {
-55                 if (list.size() == 5) {
-56                     System.out.println("==5, 线程b准备退出了");
-57                     throw new InterruptedException();
-58                 }
-59             }
-60         } catch (InterruptedException e) {
-61             e.printStackTrace();
-62         }
-63     }
-64 }
-65 
-66 import mylist.MyList;
-67 import extthread.ThreadA;
-68 import extthread.ThreadB;
-69 
-70 public class Test {
-71 
-72     public static void main(String[] args) {
-73         MyList service = new MyList();
-74 
-75         ThreadA a = new ThreadA(service);
-76         a.setName("A");
-77         a.start();
-78 
-79         ThreadB b = new ThreadB(service);
-80         b.setName("B");
-81         b.start();
-82     }
-83 }
-
+ 1 import java.util.ArrayList; 2 import java.util.List; 3  4 public class MyList { 5  6     private List<String> list = new ArrayList<String>(); 7     public void add() { 8         list.add("elements"); 9     }10     public int size() {11         return list.size();12     }13 }14 15 import mylist.MyList;16 17 public class ThreadA extends Thread {18 19     private MyList list;20 21     public ThreadA(MyList list) {22         super();23         this.list = list;24     }25 26     @Override27     public void run() {28         try {29             for (int i = 0; i < 10; i++) {30                 list.add();31                 System.out.println("添加了" + (i + 1) + "个元素");32                 Thread.sleep(1000);33             }34         } catch (InterruptedException e) {35             e.printStackTrace();36         }37     }38 }39 40 import mylist.MyList;41 42 public class ThreadB extends Thread {43 44     private MyList list;45 46     public ThreadB(MyList list) {47         super();48         this.list = list;49     }50 51     @Override52     public void run() {53         try {54             while (true) {55                 if (list.size() == 5) {56                     System.out.println("==5, 线程b准备退出了");57                     throw new InterruptedException();58                 }59             }60         } catch (InterruptedException e) {61             e.printStackTrace();62         }63     }64 }65 66 import mylist.MyList;67 import extthread.ThreadA;68 import extthread.ThreadB;69 70 public class Test {71 72     public static void main(String[] args) {73         MyList service = new MyList();74 75         ThreadA a = new ThreadA(service);76         a.setName("A");77         a.start();78 79         ThreadB b = new ThreadB(service);80         b.setName("B");81         b.start();82     }83 }
 ```
 
 在这种方式下，线程A不断地改变条件，线程ThreadB不停地通过while语句检测这个条件(list.size()==5)是否成立 ，从而实现了线程间的通信。但是**这种方式会浪费CPU资源**。之所以说它浪费资源，是因为JVM调度器将CPU交给线程B执行时，它没做啥“有用”的工作，只是在不断地测试 某个条件是否成立。*就类似于现实生活中，某个人一直看着手机屏幕是否有电话来了，而不是： 在干别的事情，当有电话来时，响铃通知TA电话来了。*关于线程的轮询的影响，[可参考：](http://www.cnblogs.com/hapjin/p/5467984.html)[JAVA多线程之当一个线程在执行死循环时会影响另外一个线程吗？](http://www.cnblogs.com/hapjin/p/5467984.html)
@@ -2078,99 +1368,7 @@ public class Run {
 代码如下：
 
 ```java
- 1 import java.util.ArrayList;
- 2 import java.util.List;
- 3 
- 4 public class MyList {
- 5 
- 6     private static List<String> list = new ArrayList<String>();
- 7 
- 8     public static void add() {
- 9         list.add("anyString");
-10     }
-11 
-12     public static int size() {
-13         return list.size();
-14     }
-15 }
-16 
-17 
-18 public class ThreadA extends Thread {
-19 
-20     private Object lock;
-21 
-22     public ThreadA(Object lock) {
-23         super();
-24         this.lock = lock;
-25     }
-26 
-27     @Override
-28     public void run() {
-29         try {
-30             synchronized (lock) {
-31                 if (MyList.size() != 5) {
-32                     System.out.println("wait begin "
-33                             + System.currentTimeMillis());
-34                     lock.wait();
-35                     System.out.println("wait end  "
-36                             + System.currentTimeMillis());
-37                 }
-38             }
-39         } catch (InterruptedException e) {
-40             e.printStackTrace();
-41         }
-42     }
-43 }
-44 
-45 
-46 public class ThreadB extends Thread {
-47     private Object lock;
-48 
-49     public ThreadB(Object lock) {
-50         super();
-51         this.lock = lock;
-52     }
-53 
-54     @Override
-55     public void run() {
-56         try {
-57             synchronized (lock) {
-58                 for (int i = 0; i < 10; i++) {
-59                     MyList.add();
-60                     if (MyList.size() == 5) {
-61                         lock.notify();
-62                         System.out.println("已经发出了通知");
-63                     }
-64                     System.out.println("添加了" + (i + 1) + "个元素!");
-65                     Thread.sleep(1000);
-66                 }
-67             }
-68         } catch (InterruptedException e) {
-69             e.printStackTrace();
-70         }
-71     }
-72 }
-73 
-74 public class Run {
-75 
-76     public static void main(String[] args) {
-77 
-78         try {
-79             Object lock = new Object();
-80 
-81             ThreadA a = new ThreadA(lock);
-82             a.start();
-83 
-84             Thread.sleep(50);
-85 
-86             ThreadB b = new ThreadB(lock);
-87             b.start();
-88         } catch (InterruptedException e) {
-89             e.printStackTrace();
-90         }
-91     }
-92 }
-
+ 1 import java.util.ArrayList; 2 import java.util.List; 3  4 public class MyList { 5  6     private static List<String> list = new ArrayList<String>(); 7  8     public static void add() { 9         list.add("anyString");10     }11 12     public static int size() {13         return list.size();14     }15 }16 17 18 public class ThreadA extends Thread {19 20     private Object lock;21 22     public ThreadA(Object lock) {23         super();24         this.lock = lock;25     }26 27     @Override28     public void run() {29         try {30             synchronized (lock) {31                 if (MyList.size() != 5) {32                     System.out.println("wait begin "33                             + System.currentTimeMillis());34                     lock.wait();35                     System.out.println("wait end  "36                             + System.currentTimeMillis());37                 }38             }39         } catch (InterruptedException e) {40             e.printStackTrace();41         }42     }43 }44 45 46 public class ThreadB extends Thread {47     private Object lock;48 49     public ThreadB(Object lock) {50         super();51         this.lock = lock;52     }53 54     @Override55     public void run() {56         try {57             synchronized (lock) {58                 for (int i = 0; i < 10; i++) {59                     MyList.add();60                     if (MyList.size() == 5) {61                         lock.notify();62                         System.out.println("已经发出了通知");63                     }64                     System.out.println("添加了" + (i + 1) + "个元素!");65                     Thread.sleep(1000);66                 }67             }68         } catch (InterruptedException e) {69             e.printStackTrace();70         }71     }72 }73 74 public class Run {75 76     public static void main(String[] args) {77 78         try {79             Object lock = new Object();80 81             ThreadA a = new ThreadA(lock);82             a.start();83 84             Thread.sleep(50);85 86             ThreadB b = new ThreadB(lock);87             b.start();88         } catch (InterruptedException e) {89             e.printStackTrace();90         }91     }92 }
 ```
 
 线程A要等待某个条件满足时(list.size()==5)，才执行操作。线程B则向list中添加元素，改变list 的size。
@@ -2262,55 +1460,7 @@ A,B之间如何通信的呢？也就是说，线程A如何知道 list.size() 已
 ## 28.如果我想新建两个线程循环打印A和B，该怎么做？如果不用Thread.sleep()，该怎么做？
 
 ```java
-public class CyclicPrint {
-	private ExecutorService executorService = Executors.newFixedThreadPool(2);
-	private boolean printA = true;
-
-	private synchronized void printA() throws InterruptedException {
-		while (!printA) wait();
-		System.out.println("A");
-		printA = false;
-		notifyAll();
-	}
-
-	private synchronized void printB() throws InterruptedException {
-		while (printA) wait();
-		System.out.println("B");
-		printA = true;
-		notifyAll();
-	}
-
-	private Thread a = new Thread(() -> {
-		while (!Thread.interrupted()) {
-			try {
-				printA();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	});
-	private Thread b = new Thread(() -> {
-		while (!Thread.interrupted()) {
-			try {
-				printB();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	});
-
-	public CyclicPrint() throws InterruptedException {
-		executorService.execute(a);
-		executorService.execute(b);
-		Thread.sleep(1000);
-		executorService.shutdownNow();
-	}
-
-	public static void main(String[] args) throws InterruptedException {
-		new CyclicPrint();
-	}
-}
-
+public class CyclicPrint {	private ExecutorService executorService = Executors.newFixedThreadPool(2);	private boolean printA = true;	private synchronized void printA() throws InterruptedException {		while (!printA) wait();		System.out.println("A");		printA = false;		notifyAll();	}	private synchronized void printB() throws InterruptedException {		while (printA) wait();		System.out.println("B");		printA = true;		notifyAll();	}	private Thread a = new Thread(() -> {		while (!Thread.interrupted()) {			try {				printA();			} catch (InterruptedException e) {				e.printStackTrace();			}		}	});	private Thread b = new Thread(() -> {		while (!Thread.interrupted()) {			try {				printB();			} catch (InterruptedException e) {				e.printStackTrace();			}		}	});	public CyclicPrint() throws InterruptedException {		executorService.execute(a);		executorService.execute(b);		Thread.sleep(1000);		executorService.shutdownNow();	}	public static void main(String[] args) throws InterruptedException {		new CyclicPrint();	}}
 ```
 
 ## 29.公平锁和非公平锁的性能差异
@@ -2377,6 +1527,18 @@ public class CyclicPrint {
 
 
 6.对高并发有哪些理解，怎么样处理？
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

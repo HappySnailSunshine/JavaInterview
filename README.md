@@ -39,8 +39,6 @@
 * 数据库
   - [MySql](./docs/MySql.md)  
   - [Redis](./docs/Redis.md) 
-* 工作流
-  - [Activiti](./docs/Activiti.md)
 
 - 规则引擎
   - [Drools](./docs/Drools.md)
@@ -51,10 +49,7 @@
   - [Mybatis](./docs/Mybatis.md)
 - 工具
   - [Git](./docs/Git.md)
-  - [Docker](./docs/Docker.md)
   - [Linux](./docs/Linux.md)
-  - [Utils常用工具](./docs/Utils.md)
-  
 
 
 

@@ -1,571 +1,5 @@
 # Redis
 
-redis中 可以加：在redis中就是目录的意思
-
-
-
-> 上面内容是自己学习时笔记
->
-> 下面面试题，是自己碰到的面试题，答案参考guide哥的Redis中内容
->
-> 敖丙Redis内容讲的也很全面
-
-# Redis介绍
-
-Nosql 非关系型数据库
-
-百科
-
-Redis
-
-可基于内存 , 可持久化的日志型、Key-Value数据库
-
-去取数据的时候，指定key即可。不能用sql语句。
-
-Redis是一个开源的内存数据库，它以键值对的形式存储数据。由于数据存储在内存中，因此Redis的速度很快，但是每次重启Redis服务时，其中的数据也可能会丢失，因此，Redis也提供了持久化存储机制，将数据以某种形式保存在文件中，每次重启时，可以自动从文件加载数据到内存当中.
-
-## Windows 
-
-绿色版 （建议使用）
-
-![](../media/pictures/Redis.assets/26987014e8aa6aad9ea36d4078a49351.png)
-
-安装版
-
-![](../media/pictures/Redis.assets/b83749ed102ddda6ad3aebba339c844e.png)
-
-建议redis安装的目录增加到环境变量。
-
-D:\\Program Files\\redis
-
-## Linux
-
-![](../media/pictures/Redis.assets/9617b1815c3f65e73873813320cd7d5e.png)
-
-![](../media/pictures/Redis.assets/42e5f5b68cf0f8390addeb847a4e51f4.png)
-
-启动
-
-![](../media/pictures/Redis.assets/d1d4a272ce44274df0b32647fb6ede9c.png)
-
-![](../media/pictures/Redis.assets/95de5705fb9ade0dd4eb02172e5fe75f.png)
-
-![](../media/pictures/Redis.assets/56e8ad6e30e5c84fa73450fab7575adc.png)
-
-启动
-
-![](../media/pictures/Redis.assets/93323a663c2d99f6a47d1728ac10c6d9.png)
-
-![](../media/pictures/Redis.assets/4da5030227ee1323cdfeb6f3c051beaa.png)
-
-![](../media/pictures/Redis.assets/e30235c417d952b374c6277c6deaae5d.png)
-
-![](../media/pictures/Redis.assets/7cb792141f451881b9cf813c978bcefb.png)
-
-## 启动
-
-**首先要启动服务器,然后才可以启动客户端!**
-
-redis-server 6379 服务器
-
-redis-cli 客户端 
-
-## 配置介绍
-
-### redis.conf
-
-### bind
-
-![](../media/pictures/Redis.assets/c3d2f9175e503389fdb64699ed85fcda.png)
-
-外网使用不了
-
-改成0.0.0.0
-
-### 端口号
-
-![](../media/pictures/Redis.assets/437d081b778c7b8b2d796df65873aad5.png)
-
-通常不需要修改
-
-### 保存时间
-
-![](../media/pictures/Redis.assets/9f32d3fe685e043f9a56e51b13da0659.png)
-
-![1571148546862](../media/pictures/Redis.assets/1571148546862.png)
-
-上面这个三个,每一次只能启动其中一个,三个之间没有包含关系!
-
-上面的save 900 1意思是,900秒,如果有一次修改,时间和次数同时满足才会触发!
-
-下面的save 60 10000 是60秒,修改10000次,才会修改!
-
-触发最下面的一个的时候,是不会触发上面的一个的!
-
-
-
-## 存储策略
-
-### RDB
-
-Redis DataBase
-
-Redis 默认的存储策略
-
-![](../media/pictures/Redis.assets/eec51808b545d413e636f8ef936dd870.png)
-
-### AOF
-
-Append-only file
-
-保存策略
-
-## 基本使用
-
-### 命令行下使用
-
-### Demo
-
-Redis 是key value形式的存储系统（nosql数据库）
-
-我们所有存的东西，都需要有个key
-
-Redis Vs HashMap
-
-只是我们之前value 可以存很多对象，
-
-Redis里value 默认支持常见的数据结构。
-
-HashMap\<String ,Object\> 可以put任何对象。
-
-而redis通过key去保存的值，只能是特定的一些结构。
-
-操作不同的数据结构的时候，redis提供了不同的命令。
-
-#### 字符串（value的类型）
-
-跟之前的map 非常类似。Value是字符串。
-
-- [SET](http://doc.redisfans.com/string/set.html) key value
-- [GET](http://doc.redisfans.com/string/get.html) key
-- [INCR](http://doc.redisfans.com/string/incr.html)
-  可以对应的key的数值（整型的数值）加一
-- [INCRBY](http://doc.redisfans.com/string/incrby.html) 给数值加上一个步长
-- [SETEX](http://doc.redisfans.com/string/setex.html) expire 过期
-- [SETNX](http://doc.redisfans.com/string/setnx.html) not exist
-  key不存在的时候再去赋值
-
-### LIST
-
-- [LPUSH](http://doc.redisfans.com/list/lpush.html)
-
-![](../media/pictures/Redis.assets/d5f125450d82fcd83772785dd48feffd.png)
-
-> 后面的元素放在栈顶 （）
-
-- [LPOP](http://doc.redisfans.com/list/lpop.html)
-
-> 返回第一个元素，并且在列表上删除该元素 （栈顶）
-
-- [LLEN](http://doc.redisfans.com/list/llen.html)
-
-> 返回当前的list列表的长度
-
-![](../media/pictures/Redis.assets/52b904a6e7937cf1204005084fc26ced.png)
-
-- [LINDEX](http://doc.redisfans.com/list/lindex.html)
-
-> 返回当前的list的指定index下标的元素。没有返回nil
-
-> 0表示栈顶的元素
-
-![](../media/pictures/Redis.assets/bbc21bac6f4184feae4c5d74685f9f72.png)
-
-- [LINSERT](http://doc.redisfans.com/list/linsert.html)
-
-> 插入的位置是按照index的顺序
-
-> Before的话得注意 index的值
-
-![](../media/pictures/Redis.assets/a26789bac0ff2b978135f65d13212994.png)
-
-![](../media/pictures/Redis.assets/a91e57dbd0df5e9a70a34bfd20beb017.png)
-
-- [LPUSHX](http://doc.redisfans.com/list/lpushx.html)
-
-> 如果list存在，再去push
-
-![](../media/pictures/Redis.assets/a3978e45ecde37a97a0d6355741e53ba.png)
-
-- [LRANGE](http://doc.redisfans.com/list/lrange.html)
-
-> 可以方便的查看某个index范围内的lislt的值
-
-> 输入的index是从0开始，显示的标号是从1开始的。
-
-![](../media/pictures/Redis.assets/8b21d03c29ad8490a7af14e1828d6a4d.png)
-
-- [LREM](http://doc.redisfans.com/list/lrem.html)
-
-> 删除list里的指定的前几个（指定value的）元素
-
-> 比如 lrem my12list 2 123 意思是删除前两个 123
-
-![](../media/pictures/Redis.assets/45902f412ef1d245c4129a7e709719b1.png)
-
-![](../media/pictures/Redis.assets/e3018c2f26290640fe76acc2394067ed.png)
-
-> Value表示删除的元素
-
-> Count表示删除几个该元素 从列表的第一个开始找
-
-> 删除指定位置的元素：没有
-
-- [LSET](http://doc.redisfans.com/list/lset.html)
-- 设置指定的位置的元素的值 （修改）
-- 输入的index是从0开始，显示的标号是从1开始的。
-
-![](../media/pictures/Redis.assets/d51eb4d471e05f5d37c0b3a8ca96eef1.png)
-
-### Hash （二维表）
-
-User{
-
-> Username:zhangsan  
-> age :18
-
-> Email:zs\@163.colm
-
-}
-
-值哈希表 key value
-
-- [HSET](http://doc.redisfans.com/hash/hset.html)
-
-![](../media/pictures/Redis.assets/c49c565e81f7c6c2402a8ab8be29c0fd.png)
-
-- [HGET](http://doc.redisfans.com/hash/hget.html)
-
-> 给一个hash表的key，返回一个值
-
-![](../media/pictures/Redis.assets/46ed9d080eb023784deb58683ee53139.png)
-
-- [HEXISTS](http://doc.redisfans.com/hash/hexists.html)
-
-> 表里的key是否存在
-
-![](../media/pictures/Redis.assets/df37dd793998b828f0df0443541f4261.png)
-
-- [HGETALL](http://doc.redisfans.com/hash/hgetall.html)
-
-> 返回hash表里的所有元素
-
-![](../media/pictures/Redis.assets/0433919d2e610cedace2bb03844dcd7b.png)
-
-- [HKEYS](http://doc.redisfans.com/hash/hkeys.html)
-
-![](../media/pictures/Redis.assets/27ce992fe3f1c310f39b322969d5006e.png)
-
-- [HLEN](http://doc.redisfans.com/hash/hlen.html)
-
-> 有几个元素（几行数据）
-
-![](../media/pictures/Redis.assets/955b74186405b060caca3a2399907a75.png)
-
-- [HVALS](http://doc.redisfans.com/hash/hvals.html)
-
-![](../media/pictures/Redis.assets/eb180d767000ab630056aa5c574e1efd.png)
-
-- [HINCRBY](http://doc.redisfans.com/hash/hincrby.html)
-
-![](../media/pictures/Redis.assets/1a871268bed1733e6ad49660b9d95389.png)
-
-- [HMGET](http://doc.redisfans.com/hash/hmget.html)
-
-> Many
-
-> 给一个hash表的多个key，返回多个值
-
-![](../media/pictures/Redis.assets/5214fd1fc33d39851085c14c25090c08.png)
-
-- [HMSET](http://doc.redisfans.com/hash/hmset.html)
-
-![](../media/pictures/Redis.assets/043eab9ce270112ad241da6aa2ca83af.png)
-
-- [HSETNX](http://doc.redisfans.com/hash/hsetnx.html)
-
-> Not exist 不存在会创建一个key，然后设置值
-
-![](../media/pictures/Redis.assets/49e9461cc2cb913dfc0e118b8c8d74ed.png)
-
-> 存在，不改变该key 的值
-
-![](../media/pictures/Redis.assets/4cf2317987566f3692d522356563b16d.png)
-
-### Set（无序集合）
-
-- [SADD](http://doc.redisfans.com/set/sadd.html)
-
-> 往set集合里增加一个或者多个元素
-
-![](../media/pictures/Redis.assets/f4a7e83f078d5a9c6fa9e7f3c71a14d4.png)
-
-- [SMEMBERS](http://doc.redisfans.com/set/smembers.html)
-
-> 列出这个集合里的所有元素
-
-![](../media/pictures/Redis.assets/b2a5f9ecb36dc179166d7dcf5688ab83.png)
-
-- [SISMEMBER](http://doc.redisfans.com/set/sismember.html)
-
-> 是否存在在当前的集合中
-
-![](../media/pictures/Redis.assets/dbf65d4f2ef9f8284b80da5879118810.png)
-
-- [SCARD](http://doc.redisfans.com/set/scard.html)
-
-> 集合的长度
-
-![](../media/pictures/Redis.assets/13493b95096a0417e34a498279af2d03.png)
-
-- [SPOP](http://doc.redisfans.com/set/spop.html) （弹出并从集合删除）
-
-> 取出集合里的5个元素
-
-![](../media/pictures/Redis.assets/11664da1f7d73648aad717f7b91a1489.png)
-
-- [SRANDMEMBER](http://doc.redisfans.com/set/srandmember.html)
-
-> 随机取出 5个元素（不删除）
-
-![](../media/pictures/Redis.assets/cb16f247eeca5079c66bf6863a06869a.png)
-
-- [SINTER](http://doc.redisfans.com/set/sinter.html)
-
-> 求出两个集合的相交部分
-
-![](../media/pictures/Redis.assets/0c0de43df363e67a25d1bcac10bd30fd.png)
-
-- [SINTERSTORE](http://doc.redisfans.com/set/sinterstore.html)
-
-> 把相交的集合保存起来
-
-- [SUNION](http://doc.redisfans.com/set/sunion.html)
-
-> 求两个集合的并集
-
-![](../media/pictures/Redis.assets/9493d809927a6896bcb295e65bc66d5d.png)
-
-- [SUNIONSTORE](http://doc.redisfans.com/set/sunionstore.html)
-- [SDIFF](http://doc.redisfans.com/set/sdiff.html)
-
-> 参数1 减去参数1和2的交集
-
-![](../media/pictures/Redis.assets/7c20513f4b02c8b6882afb4e35aacf6f.png)
-
-- [SDIFFSTORE](http://doc.redisfans.com/set/sdiffstore.html)
-
-> 同上，SDIFFSTORE destination key1 [key2] 返回给定所有集合的差集并存储在
-> destination 中
-
-- [SMOVE](http://doc.redisfans.com/set/smove.html)
-
-![](../media/pictures/Redis.assets/22445ccb3454652ecf3214d5ff387d53.png)
-
-- [SREM](http://doc.redisfans.com/set/srem.html) 删除
-
-![](../media/pictures/Redis.assets/2146fc2c27fd75c6335bb4109a87fe5c.png)
-
-> 你的关注的人
-
-> 他关注的人
-
-> 的共同部分 sinter 就是共同关注的
-
-### SortSet
-
-有序的集合，它是可以给一个值 赋予一个分值，根据分值来排序
-
-- [ZADD](http://doc.redisfans.com/sorted_set/zadd.html)
-
-![](../media/pictures/Redis.assets/6037cd01e3f1d35606a7f201c31c31b1.png)
-
-- [ZCARD](http://doc.redisfans.com/sorted_set/zcard.html)
-
-> 长度
-
-![](../media/pictures/Redis.assets/94c87bdbf2b2c6821e425bf34da3a1ad.png)
-
-- [ZSCORE](http://doc.redisfans.com/sorted_set/zscore.html)
-
-![](../media/pictures/Redis.assets/da34c4f3380a7ef61bdc689dba56c7b6.png)
-
-- [ZCOUNT](http://doc.redisfans.com/sorted_set/zcount.html) （闭区间）
-
-![](../media/pictures/Redis.assets/9b0af64edadf6f06ef53ea4f5a3ffa25.png)
-
-- [ZINCRBY](http://doc.redisfans.com/sorted_set/zincrby.html)
-
-![](../media/pictures/Redis.assets/4c469f20b3f3b44a0a2d5569d70cdd8b.png)
-
-- [ZRANGE](http://doc.redisfans.com/sorted_set/zrange.html)
-
-> 根据排名给出范围
-
-![](../media/pictures/Redis.assets/3e0e81409cc995f243a345c3a1867859.png)
-
-- [ZRANGEBYSCORE](http://doc.redisfans.com/sorted_set/zrangebyscore.html)
-
-> 根据指定的分值范围去查找
-
-![](../media/pictures/Redis.assets/96ca656c1ebbbc5ef150669afa176964.png)
-
-- [ZRANK](http://doc.redisfans.com/sorted_set/zrank.html) （排名从0开始）
-
-![](../media/pictures/Redis.assets/abdcf2314af087b7c1f5df360d596cef.png)
-
-- [ZREVRANGE](http://doc.redisfans.com/sorted_set/zrevrange.html)
-- 先全部反转，在去对应的index的value
-
-![](../media/pictures/Redis.assets/291f76107d0cc8bef593e4c3ac28fab4.png)
-
-- [ZREVRANGEBYSCORE](http://doc.redisfans.com/sorted_set/zrevrangebyscore.html)
-
-![](../media/pictures/Redis.assets/0ab9f6e487d84d3478b3a3129dd954ba.png)
-
-- [ZREVRANK](http://doc.redisfans.com/sorted_set/zrevrank.html)
-
-> 返回一个逆序的排名值
-
-![](../media/pictures/Redis.assets/7d2c77cbe7fc17daefd5e91f053b8b4a.png)
-
-- [ZREM](http://doc.redisfans.com/sorted_set/zrem.html)
-
-> 删除
-
-- [ZREMRANGEBYRANK](http://doc.redisfans.com/sorted_set/zremrangebyrank.html)
-
-> 删除指定排名的成员
-
-![](../media/pictures/Redis.assets/d9b125c88935c9dea16790ce6cfe1259.png)
-
-- [ZREMRANGEBYSCORE](http://doc.redisfans.com/sorted_set/zremrangebyscore.html)
-
-> 删除指定分数区间的成员
-
-![](../media/pictures/Redis.assets/f401fb48e41895adbe57f1784bca3082.png)
-
-## 代码里使用
-
-1 jedis
-
-增加依赖
-
-![](../media/pictures/Redis.assets/d7f75220ccdd907536c4dd23ac4c59d2.png)
-
-2 RedisTemplate
-
-导包 导的是spring boot对redis的支持包
-
-```xml
-<!-- redis RedisTemplate 经过测试 这个是可以用的!-->
-<!--StringRedisTemplate--> 
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-data-redis</artifactId>
-</dependency>
-```
-
-\<**dependency**\>  
-\<**groupId**\>org.springframework.boot\</**groupId**\>  
-\<**artifactId**\>spring-boot-starter-data-redis\</**artifactId**\>  
-\</**dependency**\>
-
-设置序列化
-
-![](../media/pictures/Redis.assets/eb2fa28dc6582e4e66979baba2895499.png)
-
-### 基本使用
-
-![](../media/pictures/Redis.assets/7b3b56ec155a0a925824b44add2e5598.png)
-
-### 优化一下
-
-## 项目实战
-
-点赞点踩
-
-用哪种数据结构实现
-
-Set
-
-Key ： newsid_like
-
-集合里放的是什么？ { 1 }
-
-newsid_dislike {
-
-}
-
-## redis单点登录
-
-1 单点登陆流程图
-
-下图和我们使用单点登陆原理一致，只是我们项目中是在生成token之后直接返回给前端，图中是放在cookie中返回给前端
-
-![](../media/pictures/Redis.assets/d7fe5837dd16d606342a84502471a08f.png)
-
-参考链接：*https://blog.csdn.net/qq_22172133/article/details/82291112*
-
-导包：
-
-![](../media/pictures/Redis.assets/4abb12febb20ef34b361553db810b26d.png)
-
-```xml
-<!--redis 单点登录-->
-<dependency>
-    <groupId>redis.clients</groupId>
-    <artifactId>jedis</artifactId>
-    <version>2.9.0</version>
-</dependency>
-
-```
-
-2，我们需要在Guns-Gateway里面去做鉴权，那么需要我们的网关项目接入redis
-
-3，我们jedis的客户端是相当于和redis服务之间新建一个连接，我们程序运行的时候不可能在我们每次需要用到redis的时候就去建立连接，所以我们需要在spring容器里面维护一个Jedis对象，或者是RedisTemplate对象，如下
-
-![](../media/pictures/Redis.assets/79053f72aedfc9cf044f5ae7f350c392.png)
-
-然后通过下面这种方式来引入jedis
-
-![](../media/pictures/Redis.assets/56b62e4680893f51784b0ad5746dadf1.png)
-
-然后实现单点登陆，把我注释的部分补充完整即可
-
-步骤1： 把token 和 userId 作为key-value存入redis 中
-
-![](../media/pictures/Redis.assets/cac2fc0b73bbc2a406cc9c6e8eee2c26.png)
-
-步骤2：
-后端把token存入缓存之后，那么下次请求过来，在经过**AuthFilter**的时候，我们获取到了前端发送过来的token，之后我们可以通过这个token去redis
-里面取userId，如果没去到，说明redis里面的数据已经过期
-
-![](../media/pictures/Redis.assets/52a67f67934144120637e65c4bb39a6d.png)
-
-## Jedis和RedisTemplate有何区别？
-
-Jedis是Redis官方推荐的面向Java的操作Redis的客户端，而RedisTemplate是SpringDataRedis中对JedisApi的高度封装。
-SpringDataRedis相对于Jedis来说可以方便地更换Redis的Java客户端，比Jedis多了自动管理连接池的特性，方便与其他Spring框架进行搭配使用如：SpringCache
-
-![1571833084560](../media/pictures/Redis.assets/1571833084560.png)
-
-他们两个执行速率不一样!  
-
-jedis比较原生,速度快!
-
-RedisTemplate是Spring分装的,功能强大,但是速度慢!
-
 
 
 # Interview
@@ -707,16 +141,7 @@ OK
 示范：
 
 ```console
-> rpush mylist A
-(integer) 1
-> rpush mylist B
-(integer) 2
-> lpush mylist first
-(integer) 3
-> lrange mylist 0 -1    # -1 表示倒数第一个元素, 这里表示从第一个元素到最后一个元素，即所有
-1) "first"
-2) "A"
-3) "B"
+> rpush mylist A(integer) 1> rpush mylist B(integer) 2> lpush mylist first(integer) 3> lrange mylist 0 -1    # -1 表示倒数第一个元素, 这里表示从第一个元素到最后一个元素，即所有1) "first"2) "A"3) "B"
 ```
 
 #### 
@@ -732,21 +157,7 @@ OK
 hash 也有缺点，hash 结构的存储消耗要高于单个字符串，所以到底该使用 hash 还是字符串，需要根据实际情况再三权衡：
 
 ```shell
-> HSET books java "think in java"    # 命令行的字符串如果包含空格则需要使用引号包裹
-(integer) 1
-> HSET books python "python cookbook"
-(integer) 1
-> HGETALL books    # key 和 value 间隔出现
-1) "java"
-2) "think in java"
-3) "python"
-4) "python cookbook"
-> HGET books java
-"think in java"
-> HSET books java "head first java"  
-(integer) 0        # 因为是更新操作，所以返回 0
-> HMSET books java "effetive  java" python "learning python"    # 批量操作
-OK
+> HSET books java "think in java"    # 命令行的字符串如果包含空格则需要使用引号包裹(integer) 1> HSET books python "python cookbook"(integer) 1> HGETALL books    # key 和 value 间隔出现1) "java"2) "think in java"3) "python"4) "python cookbook"> HGET books java"think in java"> HSET books java "head first java"  (integer) 0        # 因为是更新操作，所以返回 0> HMSET books java "effetive  java" python "learning python"    # 批量操作OK
 ```
 
 ## 
@@ -760,22 +171,7 @@ OK
 由于该结构比较简单，我们直接来看看是如何使用的：
 
 ```shell
-> SADD books java
-(integer) 1
-> SADD books java    # 重复
-(integer) 0
-> SADD books python golang
-(integer) 2
-> SMEMBERS books    # 注意顺序，set 是无序的 
-1) "java"
-2) "python"
-3) "golang"
-> SISMEMBER books java    # 查询某个 value 是否存在，相当于 contains
-(integer) 1
-> SCARD books    # 获取长度
-(integer) 3
-> SPOP books     # 弹出一个
-"java"
+> SADD books java(integer) 1> SADD books java    # 重复(integer) 0> SADD books python golang(integer) 2> SMEMBERS books    # 注意顺序，set 是无序的 1) "java"2) "python"3) "golang"> SISMEMBER books java    # 查询某个 value 是否存在，相当于 contains(integer) 1> SCARD books    # 获取长度(integer) 3> SPOP books     # 弹出一个"java"
 ```
 
 ## 
@@ -797,44 +193,7 @@ OK
 ##### 有序列表 zset 基础操作
 
 ```console
-> ZADD books 9.0 "think in java"
-> ZADD books 8.9 "java concurrency"
-> ZADD books 8.6 "java cookbook"
-
-> ZRANGE books 0 -1     # 按 score 排序列出，参数区间为排名范围
-1) "java cookbook"
-2) "java concurrency"
-3) "think in java"
-
-> ZREVRANGE books 0 -1  # 按 score 逆序列出，参数区间为排名范围
-1) "think in java"
-2) "java concurrency"
-3) "java cookbook"
-
-> ZCARD books           # 相当于 count()
-(integer) 3
-
-> ZSCORE books "java concurrency"   # 获取指定 value 的 score
-"8.9000000000000004"                # 内部 score 使用 double 类型进行存储，所以存在小数点精度问题
-
-> ZRANK books "java concurrency"    # 排名
-(integer) 1
-
-> ZRANGEBYSCORE books 0 8.91        # 根据分值区间遍历 zset
-1) "java cookbook"
-2) "java concurrency"
-
-> ZRANGEBYSCORE books -inf 8.91 withscores  # 根据分值区间 (-∞, 8.91] 遍历 zset，同时返回分值。inf 代表 infinite，无穷大的意思。
-1) "java cookbook"
-2) "8.5999999999999996"
-3) "java concurrency"
-4) "8.9000000000000004"
-
-> ZREM books "java concurrency"             # 删除 value
-(integer) 1
-> ZRANGE books 0 -1
-1) "java cookbook"
-2) "think in java"
+> ZADD books 9.0 "think in java"> ZADD books 8.9 "java concurrency"> ZADD books 8.6 "java cookbook"> ZRANGE books 0 -1     # 按 score 排序列出，参数区间为排名范围1) "java cookbook"2) "java concurrency"3) "think in java"> ZREVRANGE books 0 -1  # 按 score 逆序列出，参数区间为排名范围1) "think in java"2) "java concurrency"3) "java cookbook"> ZCARD books           # 相当于 count()(integer) 3> ZSCORE books "java concurrency"   # 获取指定 value 的 score"8.9000000000000004"                # 内部 score 使用 double 类型进行存储，所以存在小数点精度问题> ZRANK books "java concurrency"    # 排名(integer) 1> ZRANGEBYSCORE books 0 8.91        # 根据分值区间遍历 zset1) "java cookbook"2) "java concurrency"> ZRANGEBYSCORE books -inf 8.91 withscores  # 根据分值区间 (-∞, 8.91] 遍历 zset，同时返回分值。inf 代表 infinite，无穷大的意思。1) "java cookbook"2) "8.5999999999999996"3) "java concurrency"4) "8.9000000000000004"> ZREM books "java concurrency"             # 删除 value(integer) 1> ZRANGE books 0 -11) "java cookbook"2) "think in java"
 ```
 
 
@@ -856,11 +215,7 @@ OK
 这种是redis默认采用的一种持久化方式。在redis.conf配置文件中默认有此下配置：
 
 ```j
-save 900 1           #在900秒(15分钟)之后，如果至少有1个key发生变化，Redis就会自动触发BGSAVE命令创建快照。
-
-save 300 10          #在300秒(5分钟)之后，如果至少有10个key发生变化，Redis就会自动触发BGSAVE命令创建快照。
-
-save 60 10000        #在60秒(1分钟)之后，如果至少有10000个key发生变化，Redis就会自动触发BGSAVE命令创建快照。
+save 900 1           #在900秒(15分钟)之后，如果至少有1个key发生变化，Redis就会自动触发BGSAVE命令创建快照。save 300 10          #在300秒(5分钟)之后，如果至少有10个key发生变化，Redis就会自动触发BGSAVE命令创建快照。save 60 10000        #在60秒(1分钟)之后，如果至少有10000个key发生变化，Redis就会自动触发BGSAVE命令创建快照。
 ```
 
 
@@ -878,10 +233,7 @@ appendonly yes
 在Redis的配置文件中存在三种不同的 AOF 持久化方式，它们分别是：
 
 ```conf
-appendfsync always    #每次有数据修改发生时都会写入AOF文件,这样会严重降低Redis的速度
-appendfsync everysec  #每秒钟同步一次，显示地将多个写命令同步到硬盘
-appendfsync no        #让操作系统决定何时进行同步
-
+appendfsync always    #每次有数据修改发生时都会写入AOF文件,这样会严重降低Redis的速度appendfsync everysec  #每秒钟同步一次，显示地将多个写命令同步到硬盘appendfsync no        #让操作系统决定何时进行同步
 ```
 
 为了兼顾数据和写入性能，用户可以考虑 appendfsync everysec选项 ，让Redis每秒同步一次AOF文件，Redis性能几乎没受到任何影响。而且这样即使出现系统崩溃，用户最多只会丢失一秒之内产生的数据。
@@ -976,11 +328,11 @@ RDB和AOF两个都用
 
 **正常缓存处理流程：**
 
-<img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/正常缓存处理流程-redis.png" style="zoom:50%;" />
+<img src="../media/pictures/Redis.assets/%E6%AD%A3%E5%B8%B8%E7%BC%93%E5%AD%98%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B-redis.png" style="zoom:50%;" />
 
 **缓存穿透情况处理流程：**
 
-<img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/缓存穿透处理流程-redis.png" style="zoom:50%;" />
+<img src="../media/pictures/Redis.assets/%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B-redis.png" style="zoom:50%;" />
 
 ------
 
@@ -995,31 +347,12 @@ RDB和AOF两个都用
  如果用 Java 代码展示的话，差不多是下面这样的：
 
 ```java
-public Object getObjectInclNullById(Integer id) {
-    // 从缓存中获取数据
-    Object cacheValue = cache.get(id);
-    // 缓存为空
-    if (cacheValue == null) {
-        // 从数据库中获取
-        Object storageValue = storage.get(key);
-        // 缓存空对象
-        cache.set(key, storageValue);
-        // 如果存储数据为空，需要设置一个过期时间(300秒)
-        if (storageValue == null) {
-            // 必须设置过期时间，否则有被攻击的风险
-            cache.expire(key, 60 * 5);
-        }
-        return storageValue;
-    }
-    return cacheValue;
-}
-
-
+public Object getObjectInclNullById(Integer id) {    // 从缓存中获取数据    Object cacheValue = cache.get(id);    // 缓存为空    if (cacheValue == null) {        // 从数据库中获取        Object storageValue = storage.get(key);        // 缓存空对象        cache.set(key, storageValue);        // 如果存储数据为空，需要设置一个过期时间(300秒)        if (storageValue == null) {            // 必须设置过期时间，否则有被攻击的风险            cache.expire(key, 60 * 5);        }        return storageValue;    }    return cacheValue;}
 ```
 
 **2）布隆过滤器：**布隆过滤器是一个非常神奇的数据结构，通过它我们可以非常方便地判断一个给定数据是否存在与海量数据中。我们需要的就是判断 key 是否合法，有没有感觉布隆过滤器就是我们想要找的那个“人”。具体是这样做的：**把所有可能存在的请求的值都存放在布隆过滤器中**，当用户请求过来，我会先判断用户发来的请求的值是否存在于布隆过滤器中。不存在的话，直接返回请求参数错误信息给客户端，存在的话才会走下面的流程。总结一下就是下面这张图(这张图片不是我画的，为了省事直接在网上找的)：
 
-<img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/布隆过滤器-缓存穿透-redis.png" style="zoom:50%;" />
+<img src="../media/pictures/Redis.assets/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F-redis.png" style="zoom:50%;" />
 
 更多关于布隆过滤器的内容可以看我的这篇原创：[《不了解布隆过滤器？一文给你整的明明白白！》](https://github.com/Snailclimb/JavaGuide/blob/master/docs/dataStructures-algorithms/data-structure/bloom-filter.md) ，强烈推荐，个人感觉网上应该找不到总结的这么明明白白的文章了。
 
@@ -1143,44 +476,19 @@ MongoDB却是一个“存储数据”的系统，增删改查可以添加很多�
 #### 设置和获取键值对
 
 ```console
-> SET key value
-OK
-> GET key
-"value"
-
-
+> SET key valueOK> GET key"value"
 ```
 
 另外你还可以使用 `EXISTS` 和 `DEL` 关键字来查询是否存在和删除键值对：
 
 ```console
-> EXISTS key
-(integer) 1
-> DEL key
-(integer) 1
-> GET key
-(nil)
-
-
+> EXISTS key(integer) 1> DEL key(integer) 1> GET key(nil)
 ```
 
 #### 批量设置键值对
 
 ```console
-> SET key1 value1
-OK
-> SET key2 value2
-OK
-> MGET key1 key2 key3    # 返回一个列表
-1) "value1"
-2) "value2"
-3) (nil)
-> MSET key1 value1 key2 value2
-> MGET key1 key2
-1) "value1"
-2) "value2"
-
-
+> SET key1 value1OK> SET key2 value2OK> MGET key1 key2 key3    # 返回一个列表1) "value1"2) "value2"3) (nil)> MSET key1 value1 key2 value2> MGET key1 key21) "value1"2) "value2"
 ```
 
 #### 过期和 SET 命令扩展
@@ -1188,15 +496,7 @@ OK
 可以对 key 设置过期时间，到时间会被自动删除，这个功能常用来控制缓存的失效时间。*(过期可以是任意数据结构)*
 
 ```console
-> SET key value1
-> GET key
-"value1"
-> EXPIRE name 5    # 5s 后过期
-...                # 等待 5s
-> GET key
-(nil)
-
-
+> SET key value1> GET key"value1"> EXPIRE name 5    # 5s 后过期...                # 等待 5s> GET key(nil)
 ```
 
 #### 链表的基本操作
@@ -1208,17 +508,7 @@ OK
 示范：
 
 ```console
-> rpush mylist A
-(integer) 1
-> rpush mylist B
-(integer) 2
-> lpush mylist first
-(integer) 3
-> lrange mylist 0 -1    # -1 表示倒数第一个元素, 这里表示从第一个元素到最后一个元素，即所有
-1) "first"
-2) "A"
-3) "B"
-
+> rpush mylist A(integer) 1> rpush mylist B(integer) 2> lpush mylist first(integer) 3> lrange mylist 0 -1    # -1 表示倒数第一个元素, 这里表示从第一个元素到最后一个元素，即所有1) "first"2) "A"3) "B"
 ```
 
 
@@ -1625,29 +915,7 @@ JDK（不支持跨语言）、JSON、XML、Hessian、Kryo（不支持跨语言�
 java 实现序列化很简单，只需要实现Serializable 接口即可。
 
 ```java
-public class User implements Serializable{
- //年龄
- private int age;
- //名字
- private String name ;
- 
- public int getAge() {
- return age;
-    }
- public void setAge(int age) {
- this.age = age;
-    }
- 
- public String getName() {
- return name;
-    }
- 
- public void setName(String name) {
- this.name = name;
-    }
-}
-
-
+public class User implements Serializable{ //年龄 private int age; //名字 private String name ;  public int getAge() { return age;    } public void setAge(int age) { this.age = age;    }  public String getName() { return name;    }  public void setName(String name) { this.name = name;    }}
 ```
 
 注意: JAVA序列化中常见的问题
@@ -1713,7 +981,6 @@ Redis 也还不够快，网络IO 传输，连接池等，所以放到ehcache 这
 
 ```
 scan
-
 ```
 
 
@@ -1737,6 +1004,16 @@ scan
 将大对象放入缓存中，有两种方式，第一种转换成json串，第二种
 
 参考：https://www.jianshu.com/p/c22954a9c37d
+
+
+
+
+
+
+
+
+
+
 
 
 
